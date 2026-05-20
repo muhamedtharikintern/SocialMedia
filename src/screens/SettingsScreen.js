@@ -24,13 +24,13 @@ import backIcon from '../assets/back.png';
 
 import accountIcon from '../assets/account.png';
 import privacyIcon from '../assets/privacy.png';
-import notificationIcon from '../assets/notification.png';
+import notificationIcon from '../assets/notifications.png';
 import aiIcon from '../assets/ai.png';
 import usageIcon from '../assets/usage.png';
 import supportIcon from '../assets/support.png';
 import loginIcon from '../assets/login.png';
 
-import arrowRightIcon from '../assets/arrow_right.png';
+import arrowRightIcon from '../assets/next.png';
 import starIcon from '../assets/star.png';
 
 const SettingsScreen = ({navigation}) => {

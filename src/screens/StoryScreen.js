@@ -24,9 +24,9 @@ import storyImage from '../assets/story_image.png';
 import closeIcon from '../assets/close.png';
 import sendIcon from '../assets/send.png';
 import moreIcon from '../assets/more.png';
-import cameraIcon from '../assets/camera.png';
+import cameraIcon from '../assets/cam.png';
 
-import profileImage from '../assets/profile1.png';
+import profileImage from '../assets/profile_1.png';
 
 const StoryScreen = ({navigation}) => {
   const [message, setMessage] = useState('');

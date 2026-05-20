@@ -27,7 +27,7 @@ import smileIcon from '../assets/smile.png';
 import sparkleSmileIcon from '../assets/sparkle_smile.png';
 import moreIcon from '../assets/more.png';
 import liveMiniImage from '../assets/live_mini.png';
-import profileImage from '../assets/profile1.png';
+import profileImage from '../assets/profile_1.png';
 
 const MyliveScreen = ({navigation}) => {
   const [comment, setComment] = useState('');

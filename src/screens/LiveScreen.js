@@ -22,7 +22,7 @@ const {width, height} = Dimensions.get('window');
 
 import liveBg from '../assets/live_bg.png';
 
-import profileImage from '../assets/profile1.png';
+import profileImage from '../assets/profile_1.png';
 
 import closeIcon from '../assets/close.png';
 import heartIcon from '../assets/heart.png';

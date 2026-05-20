@@ -43,18 +43,18 @@ export default function ReshareScreen() {
   ];
 
   const posts = [
-    require('../../assets/post1.png'),
-    require('../../assets/post2.png'),
-    require('../../assets/post3.png'),
-    require('../../assets/post4.png'),
-    require('../../assets/post5.png'),
-    require('../../assets/post6.png'),
-    require('../../assets/post7.png'),
-    require('../../assets/post8.png'),
-    require('../../assets/post9.png'),
-    require('../../assets/post10.png'),
-    require('../../assets/post11.png'),
-    require('../../assets/post12.png'),
+    require('../../assets/post_1.png'),
+    require('../../assets/post_2.png'),
+    require('../../assets/post_3.png'),
+    require('../../assets/post_4.png'),
+    require('../../assets/post_5.png'),
+    require('../../assets/post_6.png'),
+    require('../../assets/post_7.png'),
+    require('../../assets/post_8.png'),
+    require('../../assets/post_9.png'),
+    require('../../assets/post_10.png'),
+    require('../../assets/post_11.png'),
+    require('../../assets/post_12.png'),
   ];
 
   return (

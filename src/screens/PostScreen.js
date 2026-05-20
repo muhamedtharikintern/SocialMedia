@@ -30,7 +30,7 @@ import publicIcon from '../assets/public.png';
 import followersIcon from '../assets/followers.png';
 import privateIcon from '../assets/private.png';
 
-import arrowRightIcon from '../assets/arrow_right.png';
+import arrowRightIcon from '../assets/next.png';
 import shareIcon from '../assets/share.png';
 
 import postImage from '../assets/post_image.png';
