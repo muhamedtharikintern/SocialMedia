@@ -10,7 +10,6 @@ import {
   Image,
   ScrollView,
   TextInput,
-  Platform,
   Dimensions,
 } from 'react-native';
 
@@ -24,24 +23,28 @@ import profileImage from '../assets/profile_edit.png';
 
 const EditprofileScreen = ({navigation}) => {
   const [name, setName] = useState('Jacob West');
-  const [username, setUsername] = useState('jacob_w');
-  const [website, setWebsite] = useState('');
+  const [username, setUsername] =
+    useState('jacob_w');
+  const [website, setWebsite] =
+    useState('');
+
   const [bio, setBio] = useState(
     'Digital goodies designer @pixsellz\nEverything is designed.',
   );
-  const [email, setEmail] = useState(
-    'jacob.west@gmail.com',
-  );
-  const [phone, setPhone] = useState(
-    '+1 202 555 0147',
-  );
+
+  const [email, setEmail] =
+    useState('jacob.west@gmail.com');
+
+  const [phone, setPhone] =
+    useState('+1 202 555 0147');
+
   const [gender, setGender] =
     useState('Male');
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      {/* STATUS BAR */}
       <StatusBar
-        translucent
         backgroundColor="#F5F5F5"
         barStyle="dark-content"
       />
@@ -57,17 +60,14 @@ const EditprofileScreen = ({navigation}) => {
         ========================= */}
 
         <View style={styles.header}>
-
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() =>
               navigation.goBack()
             }>
-
             <Text style={styles.cancelText}>
               Cancel
             </Text>
-
           </TouchableOpacity>
 
           <Text style={styles.headerTitle}>
@@ -76,13 +76,10 @@ const EditprofileScreen = ({navigation}) => {
 
           <TouchableOpacity
             activeOpacity={0.8}>
-
             <Text style={styles.doneText}>
               Done
             </Text>
-
           </TouchableOpacity>
-
         </View>
 
         {/* =========================
@@ -90,7 +87,6 @@ const EditprofileScreen = ({navigation}) => {
         ========================= */}
 
         <View style={styles.profileSection}>
-
           <Image
             source={profileImage}
             style={styles.profileImage}
@@ -98,32 +94,29 @@ const EditprofileScreen = ({navigation}) => {
 
           <TouchableOpacity
             activeOpacity={0.8}>
-
             <Text
-              style={styles.changePhotoText}>
+              style={
+                styles.changePhotoText
+              }>
               Change Profile Photo
             </Text>
-
           </TouchableOpacity>
-
         </View>
 
-        {/* =========================
-            FORM SECTION
-        ========================= */}
+        {/* DIVIDER */}
 
-        <View style={styles.sectionDivider} />
+        <View
+          style={styles.sectionDivider}
+        />
 
         {/* NAME */}
 
         <View style={styles.fieldRow}>
-
           <Text style={styles.fieldLabel}>
             Name
           </Text>
 
           <View style={styles.fieldContent}>
-
             <TextInput
               value={name}
               onChangeText={setName}
@@ -134,24 +127,22 @@ const EditprofileScreen = ({navigation}) => {
             <View
               style={styles.inputDivider}
             />
-
           </View>
-
         </View>
 
         {/* USERNAME */}
 
         <View style={styles.fieldRow}>
-
           <Text style={styles.fieldLabel}>
             Username
           </Text>
 
           <View style={styles.fieldContent}>
-
             <TextInput
               value={username}
-              onChangeText={setUsername}
+              onChangeText={
+                setUsername
+              }
               style={styles.fieldInput}
               placeholderTextColor="#9B9B9B"
             />
@@ -159,21 +150,17 @@ const EditprofileScreen = ({navigation}) => {
             <View
               style={styles.inputDivider}
             />
-
           </View>
-
         </View>
 
         {/* WEBSITE */}
 
         <View style={styles.fieldRow}>
-
           <Text style={styles.fieldLabel}>
             Website
           </Text>
 
           <View style={styles.fieldContent}>
-
             <TextInput
               value={website}
               onChangeText={setWebsite}
@@ -185,21 +172,17 @@ const EditprofileScreen = ({navigation}) => {
             <View
               style={styles.inputDivider}
             />
-
           </View>
-
         </View>
 
         {/* BIO */}
 
         <View style={styles.fieldRow}>
-
           <Text style={styles.fieldLabel}>
             Bio
           </Text>
 
           <View style={styles.fieldContent}>
-
             <TextInput
               value={bio}
               onChangeText={setBio}
@@ -208,35 +191,35 @@ const EditprofileScreen = ({navigation}) => {
                 styles.bioInput,
               ]}
               multiline
+              textAlignVertical="top"
               placeholderTextColor="#9B9B9B"
             />
-
           </View>
-
         </View>
 
-        {/* =========================
-            PROFESSIONAL ACCOUNT
-        ========================= */}
+        {/* DIVIDER */}
 
-        <View style={styles.sectionDivider} />
+        <View
+          style={styles.sectionDivider}
+        />
+
+        {/* PROFESSIONAL ACCOUNT */}
 
         <TouchableOpacity
           activeOpacity={0.8}
-          style={styles.professionalButton}>
-
+          style={
+            styles.professionalButton
+          }>
           <Text
             style={
               styles.professionalButtonText
             }>
-            Switch to Professional Account
+            Switch to Professional
+            Account
           </Text>
-
         </TouchableOpacity>
 
-        {/* =========================
-            PRIVATE INFO
-        ========================= */}
+        {/* PRIVATE INFO */}
 
         <Text style={styles.privateTitle}>
           Private Information
@@ -245,13 +228,11 @@ const EditprofileScreen = ({navigation}) => {
         {/* EMAIL */}
 
         <View style={styles.fieldRow}>
-
           <Text style={styles.fieldLabel}>
             Email
           </Text>
 
           <View style={styles.fieldContent}>
-
             <TextInput
               value={email}
               onChangeText={setEmail}
@@ -262,21 +243,17 @@ const EditprofileScreen = ({navigation}) => {
             <View
               style={styles.inputDivider}
             />
-
           </View>
-
         </View>
 
         {/* PHONE */}
 
         <View style={styles.fieldRow}>
-
           <Text style={styles.fieldLabel}>
             Phone
           </Text>
 
           <View style={styles.fieldContent}>
-
             <TextInput
               value={phone}
               onChangeText={setPhone}
@@ -287,21 +264,17 @@ const EditprofileScreen = ({navigation}) => {
             <View
               style={styles.inputDivider}
             />
-
           </View>
-
         </View>
 
         {/* GENDER */}
 
         <View style={styles.fieldRow}>
-
           <Text style={styles.fieldLabel}>
             Gender
           </Text>
 
           <View style={styles.fieldContent}>
-
             <TextInput
               value={gender}
               onChangeText={setGender}
@@ -312,13 +285,9 @@ const EditprofileScreen = ({navigation}) => {
             <View
               style={styles.inputDivider}
             />
-
           </View>
-
         </View>
-
       </ScrollView>
-
     </SafeAreaView>
   );
 };
@@ -329,115 +298,86 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#F5F5F5',
-
-    paddingTop:
-      Platform.OS === 'android'
-        ? StatusBar.currentHeight
-        : 0,
   },
 
   scrollContent: {
     paddingBottom: 80,
+    paddingTop: 10,
   },
 
-  /* =========================
-      HEADER
-  ========================= */
+  /* HEADER */
 
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent:
+      'space-between',
 
-    paddingHorizontal: 28,
-
-    paddingTop:
-      Platform.OS === 'ios'
-        ? 24
-        : 20,
-
-    paddingBottom: 32,
+    paddingHorizontal: 24,
+    paddingTop: 12,
+    paddingBottom: 24,
   },
 
   cancelText: {
     fontSize: 18,
     fontWeight: '600',
-
     color: '#111111',
   },
 
   headerTitle: {
     fontSize: 20,
     fontWeight: '700',
-
     color: '#111111',
   },
 
   doneText: {
     fontSize: 18,
     fontWeight: '600',
-
     color: '#1D9BF0',
   },
 
-  /* =========================
-      PROFILE
-  ========================= */
+  /* PROFILE */
 
   profileSection: {
     alignItems: 'center',
     justifyContent: 'center',
-
     marginBottom: 28,
   },
 
   profileImage: {
-    width: 176,
-    height: 176,
-
-    borderRadius: 88,
-
-    marginBottom: 24,
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    marginBottom: 18,
   },
 
   changePhotoText: {
     fontSize: 18,
     fontWeight: '500',
-
     color: '#2F80ED',
   },
 
   sectionDivider: {
-    width: width - 56,
+    width: width - 48,
     height: 1,
-
     backgroundColor: '#DDDDDD',
-
     alignSelf: 'center',
-
-    marginBottom: 28,
+    marginBottom: 24,
   },
 
-  /* =========================
-      FORM
-  ========================= */
+  /* FORM */
 
   fieldRow: {
     flexDirection: 'row',
-
-    paddingHorizontal: 28,
-
-    marginBottom: 28,
+    paddingHorizontal: 24,
+    marginBottom: 26,
   },
 
   fieldLabel: {
-    width: 120,
-
-    fontSize: 18,
+    width: 110,
+    fontSize: 17,
     fontWeight: '700',
-
     color: '#111111',
-
     paddingTop: 10,
   },
 
@@ -446,59 +386,44 @@ const styles = StyleSheet.create({
   },
 
   fieldInput: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '500',
-
     color: '#222222',
-
+    minHeight: 42,
     paddingVertical: 0,
-
-    minHeight: 40,
   },
 
   bioInput: {
     minHeight: 90,
-
-    lineHeight: 34,
+    lineHeight: 28,
   },
 
   inputDivider: {
     height: 1,
-
     backgroundColor: '#DDDDDD',
-
-    marginTop: 18,
+    marginTop: 14,
   },
 
-  /* =========================
-      PROFESSIONAL
-  ========================= */
+  /* PROFESSIONAL */
 
   professionalButton: {
-    paddingHorizontal: 28,
-
-    marginBottom: 48,
+    paddingHorizontal: 24,
+    marginBottom: 40,
   },
 
   professionalButtonText: {
     fontSize: 18,
     fontWeight: '600',
-
     color: '#2F80ED',
   },
 
-  /* =========================
-      PRIVATE
-  ========================= */
+  /* PRIVATE */
 
   privateTitle: {
     fontSize: 20,
     fontWeight: '700',
-
     color: '#111111',
-
-    paddingHorizontal: 28,
-
-    marginBottom: 40,
+    paddingHorizontal: 24,
+    marginBottom: 34,
   },
 });

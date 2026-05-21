@@ -21,7 +21,7 @@ const LoginScreen = ({navigation}) => {
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    navigation.navigate('HomeScreen');
+    navigation.replace('BottomTabs');
   };
 
   const handleSignup = () => {

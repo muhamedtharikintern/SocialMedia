@@ -1,12 +1,10 @@
 import React from 'react';
-
 import {
   View,
   StyleSheet,
   Dimensions,
-  Platform,
-  TouchableOpacity,
   Image,
+  TouchableOpacity,
 } from 'react-native';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -16,32 +14,45 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 ========================= */
 
 import HomeScreen from '../screens/HomeScreen';
-import SearchScreen from '../screens/SearchScreen';
-import CreateScreen from '../screens/CreateScreen';
-import MessagesScreen from '../screens/MessagesScreen';
+import ExploreScreen from '../screens/ExploreScreen';
+import CreateAIScreen from '../screens/CreateAIScreen';
+import ChatScreen from '../screens/ChatScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 
 /* =========================
-   PNG ICONS
+   ICONS
 ========================= */
 
 import homeIcon from '../assets/home.png';
-import homeActiveIcon from '../assets/home_active.png';
-
 import searchIcon from '../assets/search.png';
-import searchActiveIcon from '../assets/search_active.png';
-
 import chatIcon from '../assets/chat.png';
-import chatActiveIcon from '../assets/chat_active.png';
-
-import profileIcon from '../assets/profile.png';
-import profileActiveIcon from '../assets/profile_active.png';
-
+import profileIcon from '../assets/profile_2.png';
 import aiIcon from '../assets/ai.png';
 
 const Tab = createBottomTabNavigator();
-
 const {width} = Dimensions.get('window');
+
+/* =========================
+   CUSTOM TAB BUTTON
+========================= */
+
+const TabButton = ({
+  children,
+  onPress,
+  center,
+}) => {
+  return (
+    <TouchableOpacity
+      activeOpacity={0.9}
+      onPress={onPress}
+      style={[
+        styles.buttonContainer,
+        center && styles.centerContainer,
+      ]}>
+      {children}
+    </TouchableOpacity>
+  );
+};
 
 const BottomTabs = () => {
   return (
@@ -54,173 +65,144 @@ const BottomTabs = () => {
         tabBarStyle: {
           position: 'absolute',
 
-          bottom: Platform.OS === 'ios' ? 24 : 18,
+          bottom: 18,
 
-          alignSelf: 'center',
+          left: 18,
+          right: 18,
 
-          width: width * 0.90,
-          height: 78,
+          height: 68,
 
-          backgroundColor: 'rgba(255,255,255,0.92)',
+          backgroundColor: 'rgba(255,255,255,0.88)',
 
           borderRadius: 999,
-
           borderTopWidth: 0,
-
-          paddingTop: 10,
-
-          paddingBottom:
-            Platform.OS === 'ios' ? 22 : 10,
 
           shadowColor: '#000',
           shadowOpacity: 0.08,
-          shadowRadius: 14,
+          shadowRadius: 10,
           shadowOffset: {
             width: 0,
-            height: 4,
+            height: 3,
           },
 
-          elevation: 8,
+          elevation: 10,
         },
       }}>
 
       {/* HOME */}
-
       <Tab.Screen
         name="HomeScreen"
         component={HomeScreen}
         options={{
+          tabBarButton: props => (
+            <TabButton {...props} />
+          ),
+
           tabBarIcon: ({focused}) => (
-            <TouchableOpacity
-              activeOpacity={0.8}
-              style={[
-                styles.tabButton,
-                focused &&
-                  styles.activeTabButton,
-              ]}>
-
+            <View style={styles.iconContainer}>
               <Image
-                source={
-                  focused
-                    ? homeActiveIcon
-                    : homeIcon
-                }
-                style={styles.bottomTabIcon}
+                source={homeIcon}
+                style={[
+                  styles.icon,
+                  focused && styles.activeIcon,
+                ]}
               />
-
-            </TouchableOpacity>
+            </View>
           ),
         }}
       />
 
       {/* SEARCH */}
-
       <Tab.Screen
-        name="SearchScreen"
-        component={SearchScreen}
+        name="ExploreScreen"
+        component={ExploreScreen}
         options={{
+          tabBarButton: props => (
+            <TabButton {...props} />
+          ),
+
           tabBarIcon: ({focused}) => (
-            <TouchableOpacity
-              activeOpacity={0.8}
-              style={[
-                styles.tabButton,
-                focused &&
-                  styles.activeTabButton,
-              ]}>
-
+            <View style={styles.iconContainer}>
               <Image
-                source={
-                  focused
-                    ? searchActiveIcon
-                    : searchIcon
-                }
-                style={styles.bottomTabIcon}
+                source={searchIcon}
+                style={[
+                  styles.icon,
+                  focused && styles.activeIcon,
+                ]}
               />
-
-            </TouchableOpacity>
+            </View>
           ),
         }}
       />
 
-      {/* CREATE */}
-
+      {/* CENTER AI BUTTON */}
       <Tab.Screen
-        name="CreateScreen"
-        component={CreateScreen}
+        name="CreateAIScreen"
+        component={CreateAIScreen}
         options={{
-          tabBarIcon: () => (
-            <TouchableOpacity
-              activeOpacity={0.8}
-              style={styles.centerButton}>
+          tabBarButton: props => (
+            <TabButton
+              {...props}
+              center
+            />
+          ),
 
+          tabBarIcon: () => (
+            <View style={styles.centerButton}>
               <Image
                 source={aiIcon}
                 style={styles.centerAIIcon}
               />
-
-            </TouchableOpacity>
+            </View>
           ),
         }}
       />
 
-      {/* MESSAGES */}
-
+      {/* CHAT */}
       <Tab.Screen
-        name="MessagesScreen"
-        component={MessagesScreen}
+        name="ChatScreen"
+        component={ChatScreen}
         options={{
+          tabBarButton: props => (
+            <TabButton {...props} />
+          ),
+
           tabBarIcon: ({focused}) => (
-            <TouchableOpacity
-              activeOpacity={0.8}
-              style={[
-                styles.tabButton,
-                focused &&
-                  styles.activeTabButton,
-              ]}>
-
+            <View style={styles.iconContainer}>
               <Image
-                source={
-                  focused
-                    ? chatActiveIcon
-                    : chatIcon
-                }
-                style={styles.bottomTabIcon}
+                source={chatIcon}
+                style={[
+                  styles.icon,
+                  focused && styles.activeIcon,
+                ]}
               />
-
-            </TouchableOpacity>
+            </View>
           ),
         }}
       />
 
       {/* PROFILE */}
-
       <Tab.Screen
         name="ProfileScreen"
         component={ProfileScreen}
         options={{
+          tabBarButton: props => (
+            <TabButton {...props} />
+          ),
+
           tabBarIcon: ({focused}) => (
-            <TouchableOpacity
-              activeOpacity={0.8}
-              style={[
-                styles.tabButton,
-                focused &&
-                  styles.activeTabButton,
-              ]}>
-
+            <View style={styles.iconContainer}>
               <Image
-                source={
-                  focused
-                    ? profileActiveIcon
-                    : profileIcon
-                }
-                style={styles.bottomTabIcon}
+                source={profileIcon}
+                style={[
+                  styles.icon,
+                  focused && styles.activeIcon,
+                ]}
               />
-
-            </TouchableOpacity>
+            </View>
           ),
         }}
       />
-
     </Tab.Navigator>
   );
 };
@@ -228,59 +210,61 @@ const BottomTabs = () => {
 export default BottomTabs;
 
 const styles = StyleSheet.create({
-  tabButton: {
-    width: 52,
-    height: 52,
+  /* TAB BUTTON SPACING */
+buttonContainer: {
+  width: 62,
+  height: 68,
 
-    borderRadius: 26,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
 
-    justifyContent: 'center',
-    alignItems: 'center',
+  /* CENTER AI FLOATING */
+  centerContainer: {
+    marginTop: -18,
   },
 
-  activeTabButton: {
-    backgroundColor: '#FFFFFF',
+iconContainer: {
+  width: 62,
+  height: 68,
 
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+
+  /* NORMAL ICON */
+icon: {
+  width: 30,
+  height: 30,
+  resizeMode: 'contain',
+},
+
+  /* ONLY ICON MOVES UP */
+  activeIcon: {
     transform: [
       {
-        translateY: -18,
+        translateY: -10,
+      },
+      {
+        scale: 1.08,
       },
     ],
-
-    shadowColor: '#000',
-    shadowOpacity: 0.12,
-    shadowRadius: 12,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-
-    elevation: 10,
   },
 
-  bottomTabIcon: {
-    width: 24,
-    height: 24,
-
-    resizeMode: 'contain',
-  },
-
+  /* AI CENTER BUTTON */
   centerButton: {
-    width: 64,
-    height: 64,
-
-    borderRadius: 32,
+    width: 58,
+    height: 58,
+    borderRadius: 29,
 
     backgroundColor: '#A100C8',
 
     justifyContent: 'center',
     alignItems: 'center',
 
-    marginTop: -32,
-
     shadowColor: '#A100C8',
-    shadowOpacity: 0.28,
-    shadowRadius: 12,
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -289,12 +273,9 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
 
-  centerAIIcon: {
-    width: 28,
-    height: 28,
-
-    tintColor: '#FFFFFF',
-
-    resizeMode: 'contain',
-  },
+centerAIIcon: {
+  width: 30,
+  height: 30,
+  resizeMode: 'contain',
+},
 });

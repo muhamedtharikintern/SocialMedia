@@ -14,13 +14,13 @@ import {
 
 const {width, height} = Dimensions.get('window');
 
-import backIcon from '../../assets/back.png';
-import verifiedIcon from '../../assets/verified.png';
+import backIcon from '../assets/back.png';
+import verifiedIcon from '../assets/verified.png';
 
-import micIcon from '../../assets/mic.png';
-import videoOffIcon from '../../assets/videooff.png';
-import muteIcon from '../../assets/mute.png';
-import endCallIcon from '../../assets/endcall.png';
+import micIcon from '../assets/mic.png';
+import videoOffIcon from '../assets/videooff.png';
+import muteIcon from '../assets/mute.png';
+import endCallIcon from '../assets/endcall.png';
 
 export default function VoiceCallScreen({navigation}) {
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -81,7 +81,7 @@ export default function VoiceCallScreen({navigation}) {
           ]}>
 
           <Image
-            source={require('../../assets/vijay.jpg')}
+            source={require('../assets/story2.png')}
             style={styles.profileImage}
           />
 

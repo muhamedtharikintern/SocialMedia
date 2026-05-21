@@ -96,7 +96,7 @@ export default function PostNowScreen({navigation}) {
 
         {/* IMAGE */}
         <Image
-          source={require('../../assets/airesult.png')}
+          source={require('../assets/airesult.png')}
           style={styles.postImage}
           resizeMode="cover"
         />

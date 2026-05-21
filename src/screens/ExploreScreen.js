@@ -126,12 +126,9 @@ const ExploreScreen = () => {
 
         <View style={styles.searchContainer}>
 
-          <Feather
-            name="search"
-            size={24}
-            color="#111111"
-            style={styles.searchIcon}
-          />
+         <Image
+         source={require('../assets/search_2.png')}
+         style={{height:30, width:30, resizeMode:"contain"}}/>
 
           <TextInput
             placeholder="Search with AI"
@@ -155,51 +152,6 @@ const ExploreScreen = () => {
         contentContainerStyle={styles.listContent}
         columnWrapperStyle={styles.columnWrapper}
       />
-
-      {/* Floating Bottom Navigation Mock */}
-      <View style={styles.floatingNav}>
-
-        <TouchableOpacity style={styles.navButton}>
-          <Ionicons
-            name="home-outline"
-            size={28}
-            color="#111111"
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navButton}>
-          <Feather
-            name="search"
-            size={25}
-            color="#111111"
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.centerButton}>
-          <Ionicons
-            name="sparkles-outline"
-            size={28}
-            color="#111111"
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navButton}>
-          <Feather
-            name="send"
-            size={24}
-            color="#111111"
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navButton}>
-          <Ionicons
-            name="person-outline"
-            size={27}
-            color="#111111"
-          />
-        </TouchableOpacity>
-
-      </View>
 
     </SafeAreaView>
   );

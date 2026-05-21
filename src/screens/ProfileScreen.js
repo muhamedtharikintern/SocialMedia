@@ -12,27 +12,41 @@ import {
   Platform,
 } from 'react-native';
 
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import Feather from 'react-native-vector-icons/Feather';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import LinearGradient from 'react-native-linear-gradient';
+import ReelScreen from './ReelScreen';
+import ReshareScreen from './ReshareScreen';
+import TagScreen from './TagScreen';
 
-const {width, height} = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
-export default function ReelScreen({navigation}) {
-  const [activeTab, setActiveTab] = useState('reels');
+export default function ProfileScreen({navigation}) {
+ const [activeTab, setActiveTab] = useState('posts');
 
   const highlights = [
     {
       id: 1,
       title: 'Highlights',
-      image: require('../../assets/highlight1.png'),
+      image: require('../assets/highlight1.png'),
     },
     {
       id: 2,
       title: 'Workout',
-      image: require('../../assets/highlight2.png'),
+      image: require('../assets/highlight2.png'),
     },
+  ];
+
+  const posts = [
+    require('../assets/post1.png'),
+    require('../assets/post2.png'),
+    require('../assets/post3.png'),
+    require('../assets/post4.png'),
+    require('../assets/post5.png'),
+    require('../assets/post_6.png'),
+    require('../assets/post_7.png'),
+    require('../assets/post_8.png'),
+    require('../assets/post_9.png'),
+    require('../assets/post_10.png'),
+    require('../assets/post_11.png'),
+    require('../assets/post_12.png'),
   ];
 
   return (
@@ -46,15 +60,14 @@ export default function ReelScreen({navigation}) {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContainer}>
 
-        {/* HEADER */}
+        {/* TOP BAR */}
         <View style={styles.headerContainer}>
 
-          <TouchableOpacity style={styles.iconButton}>
-            <Ionicons
-              name="add"
-              size={34}
-              color="#111111"
-            />
+          <TouchableOpacity style={styles.iconButton}
+          onPress={()=> navigation.navigate("CreatePostScreen")}>
+            <Image
+           source={require('../assets/add.png')}
+           style={{height:30,width:30,resizeMode:"contain"}}/>
           </TouchableOpacity>
 
           <View style={styles.usernameContainer}>
@@ -63,21 +76,17 @@ export default function ReelScreen({navigation}) {
               arunvijay
             </Text>
 
-            <Ionicons
-              name="checkmark-circle"
-              size={24}
-              color="#1D9BF0"
-              style={styles.verifiedIcon}
-            />
+              <Image
+           source={require('../assets/verified.png')}
+           style={{height:24,width:24,resizeMode:"contain"}}/>
 
           </View>
 
-          <TouchableOpacity style={styles.iconButton}>
-            <Feather
-              name="settings"
-              size={30}
-              color="#111111"
-            />
+          <TouchableOpacity style={styles.iconButton}
+          onPress={()=> navigation.navigate("SettingsScreen")}>
+             <Image
+           source={require('../assets/settings.png')}
+           style={{height:30,width:30,resizeMode:"contain"}}/>
           </TouchableOpacity>
 
         </View>
@@ -89,17 +98,16 @@ export default function ReelScreen({navigation}) {
 
             <View style={styles.profileRing}>
               <Image
-                source={require('../../assets/profile.png')}
+                source={require('../assets/profile.png')}
                 style={styles.profileImage}
               />
             </View>
 
             <TouchableOpacity style={styles.addStoryButton}>
-              <Ionicons
-                name="add"
-                size={18}
-                color="#FFFFFF"
-              />
+
+            <Image
+           source={require('../assets/plus_circle.png')}
+           style={{height:18,width:18,resizeMode:"contain"}}/>
             </TouchableOpacity>
 
           </View>
@@ -142,10 +150,11 @@ export default function ReelScreen({navigation}) {
 
         </View>
 
-        {/* BUTTONS */}
+        {/* ACTION BUTTONS */}
         <View style={styles.actionContainer}>
 
-          <TouchableOpacity style={styles.actionButton}>
+          <TouchableOpacity style={styles.actionButton}
+          onPress={()=> navigation.navigate("EditProfileScreen")}>
             <Text style={styles.actionButtonText}>
               Edit Profile
             </Text>
@@ -168,11 +177,9 @@ export default function ReelScreen({navigation}) {
           <View style={styles.highlightWrapper}>
 
             <TouchableOpacity style={styles.newHighlight}>
-              <Ionicons
-                name="add"
-                size={34}
-                color="#A100C8"
-              />
+              <Image
+            source={require('../assets/plus_circle.png')}
+            style={{height:30,width:30,resizeMode:"contain"}}/>
             </TouchableOpacity>
 
             <Text style={styles.highlightText}>
@@ -186,12 +193,10 @@ export default function ReelScreen({navigation}) {
               key={item.id}
               style={styles.highlightWrapper}>
 
-              <View style={styles.highlightRing}>
-                <Image
-                  source={item.image}
-                  style={styles.highlightImage}
-                />
-              </View>
+              <Image
+                source={item.image}
+                style={styles.highlightImage}
+              />
 
               <Text style={styles.highlightText}>
                 {item.title}
@@ -202,136 +207,118 @@ export default function ReelScreen({navigation}) {
 
         </ScrollView>
 
-        {/* TABS */}
-        <View style={styles.tabContainer}>
+    <View style={styles.tabContainer}>
 
-          <TouchableOpacity
-            style={styles.tabButton}
-            onPress={() => setActiveTab('posts')}>
+              {/* POSTS */}
+              <TouchableOpacity
+                style={styles.tabButton}
+                onPress={() =>
+                  setActiveTab('posts')
+                }>
 
-            <MaterialCommunityIcons
-              name="view-grid-outline"
-              size={34}
-              color="#111111"
-            />
+                <Image
+                  source={require('../assets/posts.png')}
+                  style={[
+                    styles.tabIcon,
+                    activeTab === 'posts' &&
+                      styles.activeTabIcon,
+                  ]}
+                />
+              </TouchableOpacity>
 
-          </TouchableOpacity>
+              {/* REELS */}
+              <TouchableOpacity
+                style={styles.tabButton}
+                onPress={() =>
+                  setActiveTab('reels')
+                }>
 
-          <TouchableOpacity
-            style={styles.tabButton}
-            onPress={() => setActiveTab('reels')}>
+                <Image
+                  source={require('../assets/reels.png')}
+                  style={[
+                    styles.tabIcon,
+                    activeTab === 'reels' &&
+                      styles.activeTabIcon,
+                  ]}
+                />
+              </TouchableOpacity>
 
-            <Ionicons
-              name="play-outline"
-              size={36}
-              color="#A100C8"
-            />
+              {/* RESHARED */}
+              <TouchableOpacity
+                style={styles.tabButton}
+                onPress={() =>
+                  setActiveTab('reshared')
+                }>
 
-          </TouchableOpacity>
+                <Image
+                  source={require('../assets/reshares.png')}
+                  style={[
+                    styles.tabIcon,
+                    activeTab ===
+                      'reshared' &&
+                      styles.activeTabIcon,
+                  ]}
+                />
+              </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.tabButton}
-            onPress={() => setActiveTab('tagged')}>
+              {/* TAGGED */}
+              <TouchableOpacity
+                style={styles.tabButton}
+                onPress={() =>
+                  setActiveTab('tagged')
+                }>
 
-            <Ionicons
-              name="sync-outline"
-              size={36}
-              color="#111111"
-            />
+                <Image
+                  source={require('../assets/tagged.png')}
+                  style={[
+                    styles.tabIcon,
+                    activeTab === 'tagged' &&
+                      styles.activeTabIcon,
+                  ]}
+                />
+              </TouchableOpacity>
 
-          </TouchableOpacity>
+            </View>
 
-          <TouchableOpacity
-            style={styles.tabButton}
-            onPress={() => setActiveTab('saved')}>
+              <View style={styles.tabContent}>
 
-            <Ionicons
-              name="person-outline"
-              size={34}
-              color="#111111"
-            />
+              {/* POSTS */}
+              {activeTab === 'posts' && (
+                <View style={styles.gridContainer}>
+                  {posts.map((item, index) => (
+                    <Image
+                      key={index}
+                      source={item}
+                      style={styles.postImage}
+                    />
+                  ))}
+                </View>
+              )}
 
-          </TouchableOpacity>
+              {/* REELS */}
+              {activeTab === 'reels' && (
+                <ReelScreen />
+              )}
 
-        </View>
+              {/* RESHARED */}
+              {activeTab === 'reshared' && (
+                <ReshareScreen />
+              )}
 
-        {/* EMPTY REEL SECTION */}
-        <View style={styles.emptySection}>
+              {/* TAGGED */}
+              {activeTab === 'tagged' && (
+                <TagScreen />
+              )}
 
-          <Text style={styles.emptyTitle}>
-            Share a moment with the world
-          </Text>
-
-          <LinearGradient
-            colors={['#D783FF', '#C65BFF', '#A100C8']}
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 0}}
-            style={styles.createButton}>
-
-            <TouchableOpacity
-              activeOpacity={0.85}
-              style={styles.createButtonInner}>
-
-              <Text style={styles.createButtonText}>
-                Create your first reel
-              </Text>
-
-            </TouchableOpacity>
-
-          </LinearGradient>
-
-        </View>
+            </View>
 
       </ScrollView>
-
-      {/* FLOATING NAVIGATION */}
-      <View style={styles.bottomNav}>
-
-        <TouchableOpacity style={styles.navButton}>
-          <Ionicons
-            name="home-outline"
-            size={32}
-            color="#111111"
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navButton}>
-          <Feather
-            name="search"
-            size={28}
-            color="#111111"
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.centerNavButton}>
-          <MaterialCommunityIcons
-            name="star-four-points-outline"
-            size={32}
-            color="#111111"
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navButton}>
-          <Feather
-            name="send"
-            size={28}
-            color="#111111"
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.activeProfileButton}>
-          <Ionicons
-            name="person-outline"
-            size={32}
-            color="#111111"
-          />
-        </TouchableOpacity>
-
-      </View>
 
     </SafeAreaView>
   );
 }
+
+const imageSize = (width - 12) / 3;
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -341,7 +328,7 @@ const styles = StyleSheet.create({
 
   scrollContainer: {
     paddingTop: Platform.OS === 'android' ? 26 : 18,
-    paddingBottom: 180,
+    paddingBottom: 160,
   },
 
   headerContainer: {
@@ -351,13 +338,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
 
-    marginBottom: 28,
+    marginBottom: 26,
   },
 
   iconButton: {
-    width: 62,
-    height: 62,
-    borderRadius: 31,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
 
     backgroundColor: '#FFFFFF',
 
@@ -381,7 +368,7 @@ const styles = StyleSheet.create({
   },
 
   username: {
-    fontSize: 24,
+    fontSize: 22,
     color: '#111111',
     fontWeight: '700',
   },
@@ -402,9 +389,9 @@ const styles = StyleSheet.create({
   },
 
   profileRing: {
-    width: 112,
-    height: 112,
-    borderRadius: 56,
+    width: 108,
+    height: 108,
+    borderRadius: 54,
 
     borderWidth: 4,
     borderColor: '#A100C8',
@@ -414,9 +401,9 @@ const styles = StyleSheet.create({
   },
 
   profileImage: {
-    width: 98,
-    height: 98,
-    borderRadius: 49,
+    width: 94,
+    height: 94,
+    borderRadius: 47,
   },
 
   addStoryButton: {
@@ -424,9 +411,9 @@ const styles = StyleSheet.create({
     bottom: 2,
     right: 2,
 
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
 
     backgroundColor: '#A100C8',
 
@@ -443,7 +430,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
 
-    marginLeft: 24,
+    marginLeft: 20,
   },
 
   statItem: {
@@ -462,30 +449,45 @@ const styles = StyleSheet.create({
     color: '#111111',
     fontWeight: '500',
   },
+  tabContent: {
+  marginTop: 10,
+},
+
+tabIcon: {
+  width: 30,
+  height: 30,
+  resizeMode: 'contain',
+  opacity: 0.45,
+},
+
+activeTabIcon: {
+  opacity: 1,
+  tintColor: '#A100C8',
+},
 
   bioContainer: {
     paddingHorizontal: 20,
-    marginTop: 20,
+    marginTop: 18,
   },
 
   nameText: {
-    fontSize: 20,
-    color: '#111111',
-    fontWeight: '700',
-    marginBottom: 6,
-  },
-
-  roleText: {
     fontSize: 18,
     color: '#111111',
     fontWeight: '700',
     marginBottom: 6,
   },
 
-  bioText: {
+  roleText: {
     fontSize: 16,
     color: '#111111',
-    lineHeight: 24,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+
+  bioText: {
+    fontSize: 15,
+    color: '#111111',
+    lineHeight: 22,
     fontWeight: '500',
   },
 
@@ -494,16 +496,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
 
     paddingHorizontal: 20,
-    marginTop: 24,
+    marginTop: 22,
   },
 
   actionButton: {
     width: '48%',
-    height: 52,
+    height: 48,
 
     backgroundColor: '#EFDDF2',
 
-    borderRadius: 16,
+    borderRadius: 14,
 
     justifyContent: 'center',
     alignItems: 'center',
@@ -517,50 +519,38 @@ const styles = StyleSheet.create({
 
   highlightContainer: {
     paddingHorizontal: 20,
-    paddingTop: 28,
+    paddingTop: 24,
   },
 
   highlightWrapper: {
     alignItems: 'center',
-    marginRight: 24,
+    marginRight: 20,
   },
 
   newHighlight: {
-    width: 106,
-    height: 106,
-    borderRadius: 53,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
 
     borderWidth: 4,
     borderColor: '#A100C8',
+
+    justifyContent: 'center',
+    alignItems: 'center',
 
     backgroundColor: '#FFFFFF',
-
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  highlightRing: {
-    width: 106,
-    height: 106,
-    borderRadius: 53,
-
-    borderWidth: 4,
-    borderColor: '#A100C8',
-
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 
   highlightImage: {
-    width: 92,
-    height: 92,
-    borderRadius: 46,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
   },
 
   highlightText: {
-    marginTop: 12,
+    marginTop: 10,
 
-    fontSize: 16,
+    fontSize: 15,
     color: '#111111',
     fontWeight: '500',
   },
@@ -571,10 +561,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
 
     marginTop: 28,
-    paddingBottom: 20,
+    marginBottom: 18,
 
-    borderBottomWidth: 1,
-    borderBottomColor: '#DADADA',
+    paddingHorizontal: 12,
   },
 
   tabButton: {
@@ -582,57 +571,32 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
 
-  emptySection: {
-    alignItems: 'center',
-    marginTop: 44,
-    paddingHorizontal: 24,
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+
+    justifyContent: 'space-between',
   },
 
-  emptyTitle: {
-    fontSize: 28,
-    color: '#111111',
-    fontWeight: '700',
-
-    textAlign: 'center',
-    lineHeight: 38,
-
-    marginBottom: 44,
-  },
-
-  createButton: {
-    width: width * 0.72,
-    height: 68,
+  postImage: {
+    width: imageSize,
+    height: imageSize * 1.28,
 
     borderRadius: 24,
 
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  createButtonInner: {
-    width: '100%',
-    height: '100%',
-
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  createButtonText: {
-    fontSize: 18,
-    color: '#111111',
-    fontWeight: '700',
+    marginBottom: 6,
   },
 
   bottomNav: {
     position: 'absolute',
-    bottom: Platform.OS === 'ios' ? 28 : 20,
+    bottom: Platform.OS === 'ios' ? 26 : 18,
 
     alignSelf: 'center',
 
-    width: width * 0.90,
+    width: width * 0.92,
     height: 88,
 
-    backgroundColor: 'rgba(255,255,255,0.92)',
+    backgroundColor: 'rgba(255,255,255,0.88)',
 
     borderRadius: 32,
 
@@ -675,38 +639,17 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
 
-  activeProfileButton: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-
-    backgroundColor: '#FFFFFF',
-
-    justifyContent: 'center',
-    alignItems: 'center',
-
-    marginTop: -52,
-
-    shadowColor: '#000',
-    shadowOpacity: 0.12,
-    shadowRadius: 12,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-
-    elevation: 7,
-  },
-
   centerNavButton: {
-    width: 66,
-    height: 66,
-    borderRadius: 33,
+    width: 70,
+    height: 70,
+    borderRadius: 35,
 
     backgroundColor: '#FFFFFF',
 
     justifyContent: 'center',
     alignItems: 'center',
+
+    marginTop: -48,
 
     shadowColor: '#000',
     shadowOpacity: 0.12,

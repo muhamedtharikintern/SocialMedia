@@ -27,7 +27,6 @@ import profileImage from '../assets/profile_1.png';
 import closeIcon from '../assets/close.png';
 import heartIcon from '../assets/heart.png';
 import sendIcon from '../assets/send.png';
-import dualSmileIcon from '../assets/dual_smile.png';
 import questionIcon from '../assets/question.png';
 import moreIcon from '../assets/more.png';
 
@@ -260,16 +259,7 @@ const liveScreen = ({navigation}) => {
 
           </TouchableOpacity>
 
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={styles.actionButton}>
-
-            <Image
-              source={dualSmileIcon}
-              style={styles.actionIcon}
-            />
-
-          </TouchableOpacity>
+       
 
         </View>
 

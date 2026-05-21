@@ -21,26 +21,14 @@ const {width, height} = Dimensions.get('window');
 import addIcon from '../assets/add.png';
 import notificationIcon from '../assets/notification.png';
 
-import homeIcon from '../assets/home.png';
-import homeActiveIcon from '../assets/home_active.png';
 
-import searchIcon from '../assets/search.png';
-import searchActiveIcon from '../assets/search_active.png';
-
-import chatIcon from '../assets/chat.png';
-import chatActiveIcon from '../assets/chat_active.png';
-
-import profileIcon from '../assets/profile.png';
-import profileActiveIcon from '../assets/profile_active.png';
-
-import aiIcon from '../assets/ai.png';
 
 import heartIcon from '../assets/heart.png';
-import heartActiveIcon from '../assets/heart_active.png';
+import heartActiveIcon from '../assets/heart.png';
 
 import commentIcon from '../assets/comment.png';
 import reshareIcon from '../assets/reshare.png';
-import sendIcon from '../assets/send.png';
+import sendIcon from '../assets/send_1.png';
 import bookmarkIcon from '../assets/bookmark.png';
 
 import verifiedIcon from '../assets/verified.png';
@@ -110,7 +98,7 @@ const posts = [
   },
 ];
 
-const HomeScreen = () => {
+const HomeScreen = ({navigation}) => {
   const [likedPosts, setLikedPosts] = useState([]);
   const [activeTab, setActiveTab] = useState('home');
 
@@ -320,6 +308,7 @@ const HomeScreen = () => {
         <View style={styles.header}>
 
           <TouchableOpacity
+          onPress={()=> navigation.navigate("CreateScreen")}
             activeOpacity={0.8}
             style={styles.headerIcon}>
 
@@ -337,6 +326,7 @@ const HomeScreen = () => {
           />
 
           <TouchableOpacity
+          onPress={()=> navigation.navigate("NotificationScreen")}
             activeOpacity={0.8}
             style={styles.headerIcon}>
 
@@ -367,99 +357,6 @@ const HomeScreen = () => {
         </View>
 
       </ScrollView>
-
-      {/* FLOATING BOTTOM TABS */}
-
-      <View style={styles.bottomTabWrapper}>
-
-        {/* HOME */}
-
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={styles.tabButton}
-          onPress={() => setActiveTab('home')}>
-
-          <Image
-            source={
-              activeTab === 'home'
-                ? homeActiveIcon
-                : homeIcon
-            }
-            style={styles.bottomTabIcon}
-          />
-
-        </TouchableOpacity>
-
-        {/* SEARCH */}
-
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={styles.tabButton}
-          onPress={() => setActiveTab('search')}>
-
-          <Image
-            source={
-              activeTab === 'search'
-                ? searchActiveIcon
-                : searchIcon
-            }
-            style={styles.bottomTabIcon}
-          />
-
-        </TouchableOpacity>
-
-        {/* CENTER AI BUTTON */}
-
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={styles.centerButton}
-          onPress={() => setActiveTab('create')}>
-
-          <Image
-            source={aiIcon}
-            style={styles.centerAIIcon}
-          />
-
-        </TouchableOpacity>
-
-        {/* CHAT */}
-
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={styles.tabButton}
-          onPress={() => setActiveTab('messages')}>
-
-          <Image
-            source={
-              activeTab === 'messages'
-                ? chatActiveIcon
-                : chatIcon
-            }
-            style={styles.bottomTabIcon}
-          />
-
-        </TouchableOpacity>
-
-        {/* PROFILE */}
-
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={styles.tabButton}
-          onPress={() => setActiveTab('profile')}>
-
-          <Image
-            source={
-              activeTab === 'profile'
-                ? profileActiveIcon
-                : profileIcon
-            }
-            style={styles.bottomTabIcon}
-          />
-
-        </TouchableOpacity>
-
-      </View>
-
     </SafeAreaView>
   );
 };
@@ -713,89 +610,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
 
-  /* =========================
-     FLOATING BOTTOM TABS
-  ========================= */
 
-  bottomTabWrapper: {
-    position: 'absolute',
 
-    bottom: Platform.OS === 'ios' ? 26 : 18,
-
-    alignSelf: 'center',
-
-    width: width * 0.90,
-    height: 78,
-
-    backgroundColor: 'rgba(255,255,255,0.92)',
-
-    borderRadius: 999,
-
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-
-    paddingHorizontal: 12,
-
-    borderWidth: 1,
-    borderColor: '#ECECEC',
-
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 14,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-
-    elevation: 8,
-  },
-
-  tabButton: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  bottomTabIcon: {
-    width: 24,
-    height: 24,
-
-    resizeMode: 'contain',
-  },
-
-  centerButton: {
-    width: 62,
-    height: 62,
-    borderRadius: 31,
-
-    justifyContent: 'center',
-    alignItems: 'center',
-
-    backgroundColor: '#A100C8',
-
-    marginTop: -28,
-
-    shadowColor: '#A100C8',
-    shadowOpacity: 0.28,
-    shadowRadius: 12,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-
-    elevation: 8,
-  },
-
-  centerAIIcon: {
-    width: 28,
-    height: 28,
-
-    tintColor: '#FFFFFF',
-
-    resizeMode: 'contain',
-  },
+ 
 });

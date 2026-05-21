@@ -85,7 +85,7 @@ export default function AIResultScreen({navigation}) {
         <View style={styles.imageCard}>
 
           <Image
-            source={require('../../assets/airesult.png')}
+            source={require('../assets/airesult.png')}
             style={styles.resultImage}
             resizeMode="cover"
           />
