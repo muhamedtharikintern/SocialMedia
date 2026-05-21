@@ -32,17 +32,17 @@ export default function AIResultScreen({navigation}) {
     {
       id: 1,
       title: 'Cinematic',
-      icon: 'film-outline',
+      icon: require('../assets/cinematic.png'),
     },
     {
       id: 2,
       title: 'Minimal',
-      icon: 'brush-outline',
+      icon: require('../assets/minimal.png'),
     },
     {
       id: 3,
       title: 'Aesthetic',
-      icon: 'sparkles-outline',
+      icon: require('../assets/aesthatic.png'),
     },
   ];
 
@@ -174,12 +174,9 @@ export default function AIResultScreen({navigation}) {
                   styles.styleCard,
                   active && styles.activeStyleCard,
                 ]}>
-
-                <Ionicons
-                  name={item.icon}
-                  size={42}
-                  color={active ? '#A100C8' : '#E28AEF'}
-                />
+                <Image
+                source={item.icon}
+                style={{height:42,width:100,resizeMode:"contain"}}/>
 
                 <Text
                   style={[
@@ -219,6 +216,7 @@ export default function AIResultScreen({navigation}) {
           </TouchableOpacity>
 
           <TouchableOpacity
+          onPress={()=> navigation.navigate("PostNowScreen")}
             activeOpacity={0.9}
             style={styles.actionButtonWrapper}>
 
@@ -234,11 +232,9 @@ export default function AIResultScreen({navigation}) {
                   Next
                 </Text>
 
-                <Ionicons
-                  name="arrow-forward"
-                  size={24}
-                  color="#FFFFFF"
-                />
+                <Image
+                source={require('../assets/right_arrow.png')}
+                style={{height:24,width:24,resizeMode:"contain"}}/>
 
               </View>
 

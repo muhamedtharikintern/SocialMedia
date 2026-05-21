@@ -24,7 +24,7 @@ import verifiedIcon from '../assets/verified.png';
 
 import videoIcon from '../assets/video.png';
 import micIcon from '../assets/mic.png';
-import switchIcon from '../assets/switch.png';
+import switchIcon from '../assets/reshares.png';
 import endCallIcon from '../assets/endcall.png';
 
 const VidcallScreen = ({navigation}) => {

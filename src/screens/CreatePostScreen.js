@@ -48,7 +48,7 @@ const createOptions = [
     id: 4,
     title: 'Highlights',
     icon: highlightsIcon,
-    screen: 'HighlightsScreen',
+    screen: 'HighlightScreen',
   },
   {
     id: 5,

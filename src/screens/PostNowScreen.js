@@ -27,17 +27,17 @@ export default function PostNowScreen({navigation}) {
     {
       id: 1,
       title: 'Public',
-      icon: 'earth',
+      icon: require('../assets/public.png'),
     },
     {
       id: 2,
       title: 'Followers',
-      icon: 'people',
+      icon: require('../assets/followers.png'),
     },
     {
       id: 3,
       title: 'Private',
-      icon: 'lock-closed',
+      icon: require('../assets/private.png'),
     },
   ];
 
@@ -45,17 +45,17 @@ export default function PostNowScreen({navigation}) {
     {
       id: 1,
       title: 'Tag People',
-      icon: 'person-add',
+      icon: require('../assets/tag_people.png'),
     },
     {
       id: 2,
       title: 'Add Location',
-      icon: 'location',
+      icon: require('../assets/location.png'),
     },
     {
       id: 3,
       title: 'Add Music',
-      icon: 'musical-notes',
+      icon: require('../assets/music.png'),
     },
   ];
 
@@ -78,11 +78,9 @@ export default function PostNowScreen({navigation}) {
             style={styles.backButton}
             onPress={() => navigation.goBack()}>
 
-            <Ionicons
-              name="arrow-back"
-              size={34}
-              color="#111111"
-            />
+            <Image
+            source={require('../assets/back.png')}
+            style={{height:34,width:34,resizeMode:'contain'}}/>
 
           </TouchableOpacity>
 
@@ -139,19 +137,11 @@ export default function PostNowScreen({navigation}) {
 
               <View style={styles.actionLeft}>
 
-                <LinearGradient
-                  colors={['#E28AEF', '#A100C8']}
-                  start={{x: 0, y: 0}}
-                  end={{x: 1, y: 1}}
-                  style={styles.iconGradient}>
 
-                  <Ionicons
-                    name={item.icon}
-                    size={30}
-                    color="#FFFFFF"
-                  />
+                  <Image
+                  source={item.icon}
+                  style={{width:40,height:40,resizeMode:'contain'}}/>
 
-                </LinearGradient>
 
                 <Text style={styles.actionText}>
                   {item.title}
@@ -159,11 +149,9 @@ export default function PostNowScreen({navigation}) {
 
               </View>
 
-              <Feather
-                name="chevron-right"
-                size={34}
-                color="#111111"
-              />
+              <Image
+              source={require('../assets/right.png')}
+              style={{width:16,height:32,resizeMode:'contain'}}/>
 
             </TouchableOpacity>
           ))}
@@ -190,11 +178,9 @@ export default function PostNowScreen({navigation}) {
                   active && styles.activePrivacyButton,
                 ]}>
 
-                <Ionicons
-                  name={item.icon}
-                  size={22}
-                  color={active ? '#FFFFFF' : '#D46BDF'}
-                />
+                 <Image
+                  source={item.icon}
+                  style={{width:22,height:22,resizeMode:'contain'}}/>
 
                 <Text
                   style={[
@@ -216,12 +202,9 @@ export default function PostNowScreen({navigation}) {
         <View style={styles.shareRow}>
 
           <View style={styles.shareLeft}>
-
-            <Feather
-              name="share-2"
-              size={32}
-              color="#111111"
-            />
+    <Image
+                  source={require('../assets/share.png')}
+                  style={{width:32,height:32,resizeMode:'contain'}}/>
 
             <Text style={styles.shareText}>
               Share to other apps

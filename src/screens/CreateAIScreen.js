@@ -59,7 +59,7 @@ const creationTypes = [
   },
 ];
 
-const CreateAIScreen = () => {
+const CreateAIScreen = ({navigation}) => {
   const [selectedType, setSelectedType] =
     useState(1);
 
@@ -211,6 +211,7 @@ const CreateAIScreen = () => {
 
         {/* GENERATE BUTTON */}
         <TouchableOpacity
+        onPress={()=> navigation.navigate("AIResultScreen")}
           activeOpacity={0.9}>
           <LinearGradient
             colors={[
