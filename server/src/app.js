@@ -3,6 +3,7 @@ import cors from "cors";
 import morgan from "morgan";
 
 import authRouter from "./routes/auth.js";
+import uploadRouter from "./routes/uploadRoutes.js";
 
 ;
 
@@ -15,6 +16,7 @@ app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 
 // Routes
 app.use('/auth', authRouter);
+app.use("/upload",uploadRouter);
 
 export default app;
 
