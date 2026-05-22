@@ -534,28 +534,36 @@ const styles = StyleSheet.create({
   ========================= */
 
   privacyContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
 
-    marginHorizontal: 40,
-    marginBottom: 40,
-  },
+  marginHorizontal: 24,
+  marginBottom: 40,
+},
 
   privacyButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+  flex: 1,
 
-    width: (width - 110) / 3,
-    height: 50,
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'center',
 
-    borderRadius: 16,
+  height: 52,
 
-    borderWidth: 1.5,
-    borderColor: '#D86BFF',
+  borderRadius: 16,
 
-    backgroundColor: '#FFFFFF',
-  },
+  borderWidth: 1.5,
+  borderColor: '#D86BFF',
+
+  backgroundColor: '#FFFFFF',
+
+  paddingHorizontal: 10,
+
+  marginHorizontal: 6,
+
+  overflow: 'hidden',
+},
 
   activePrivacyButton: {
     backgroundColor: '#A100C8',
@@ -563,26 +571,28 @@ const styles = StyleSheet.create({
   },
 
   privacyIcon: {
-    width: 20,
-    height: 20,
+  width: 18,
+  height: 18,
 
-    resizeMode: 'contain',
+  resizeMode: 'contain',
 
-    tintColor: '#D86BFF',
+  tintColor: '#D86BFF',
 
-    marginRight: 8,
-  },
+  marginRight: 6,
+},
 
   activePrivacyIcon: {
     tintColor: '#FFFFFF',
   },
 
   privacyText: {
-    fontSize: 14,
-    fontWeight: '700',
+  fontSize: width < 380 ? 12 : 14,
+  fontWeight: '700',
 
-    color: '#D86BFF',
-  },
+  color: '#D86BFF',
+
+  includeFontPadding: false,
+},
 
   activePrivacyText: {
     color: '#FFFFFF',

@@ -165,13 +165,13 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
     alignItems: 'center',
-    paddingTop: height * 0.08,
+    paddingTop: height * 0.04,
     paddingBottom: 32,
   },
 
   logoContainer: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: 24,
   },
 
   logo: {
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     fontSize: 34,
     color: '#A100C8',
     fontWeight: '500',
-    marginTop: 40,
+    marginTop: 20,
   },
 
   formContainer: {
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
     color: '#8A00B8',
     fontWeight: '600',
     marginTop: 4,
-    marginBottom: 40,
+    marginBottom: 24,
   },
 
   loginButton: {
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
   socialContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 110,
+    marginTop: 56,
   },
 
   socialButton: {
@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
   bottomContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 70,
+    marginTop: 40,
   },
 
   bottomText: {

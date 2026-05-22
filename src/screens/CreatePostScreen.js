@@ -149,17 +149,22 @@ export default CreatePostScreen;
 
 const styles = StyleSheet.create({
   mainContainer: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.18)',
-  },
+  flex: 1,
+  justifyContent: 'flex-end',
+  backgroundColor: 'rgba(0,0,0,0.18)',
+},
 
   backdrop: {
-    flex: 1,
-  },
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+},
 
   bottomSheet: {
     width: '100%',
-    height: height * 0.73,
+    height: height * 0.58,
 
     backgroundColor: '#F5F5F5',
 
@@ -193,7 +198,7 @@ const styles = StyleSheet.create({
   },
 
   headerTitle: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: '700',
 
     color: '#111111',
@@ -205,7 +210,7 @@ const styles = StyleSheet.create({
   },
 
   optionRow: {
-    height: 132,
+    height: 94,
 
     justifyContent: 'center',
 
@@ -223,26 +228,29 @@ const styles = StyleSheet.create({
   },
 
   iconContainer: {
-    width: 56,
-    height: 56,
+    width: 42,
+    height: 42,
 
     alignItems: 'center',
     justifyContent: 'center',
 
-    marginRight: 28,
+    marginRight: 18,
   },
 
   optionIcon: {
-    width: 42,
-    height: 42,
+    width: 30,
+    height: 30,
 
     resizeMode: 'contain',
   },
 
   optionText: {
-    fontSize: 28,
-    fontWeight: '500',
+  fontSize: 18,
+  fontWeight: '500',
 
-    color: '#000000',
-  },
+  color: '#000000',
+
+  includeFontPadding: false,
+  textAlignVertical: 'center',
+},
 });

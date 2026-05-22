@@ -8,6 +8,8 @@ import {
   StatusBar,
   TouchableOpacity,
   Image,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   TextInput,
   Dimensions,
@@ -49,11 +51,25 @@ const EditprofileScreen = ({navigation}) => {
         barStyle="dark-content"
       />
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={
-          styles.scrollContent
-        }>
+      <KeyboardAvoidingView
+  style={styles.keyboardContainer}
+  behavior={
+    Platform.OS === 'ios'
+      ? 'padding'
+      : 'height'
+  }
+  keyboardVerticalOffset={
+    Platform.OS === 'ios' ? 20 : 0
+  }>
+
+  <ScrollView
+    showsVerticalScrollIndicator={false}
+    contentContainerStyle={
+      styles.scrollContent
+    }
+    keyboardShouldPersistTaps="handled"
+    keyboardDismissMode="interactive">
+
 
         {/* =========================
             HEADER
@@ -75,11 +91,14 @@ const EditprofileScreen = ({navigation}) => {
           </Text>
 
           <TouchableOpacity
-            activeOpacity={0.8}>
-            <Text style={styles.doneText}>
-              Done
-            </Text>
-          </TouchableOpacity>
+  activeOpacity={0.8}
+  onPress={() =>
+    navigation.goBack()
+  }>
+  <Text style={styles.doneText}>
+    Done
+  </Text>
+</TouchableOpacity>
         </View>
 
         {/* =========================
@@ -288,6 +307,7 @@ const EditprofileScreen = ({navigation}) => {
           </View>
         </View>
       </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -300,8 +320,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
   },
 
+  keyboardContainer: {
+  flex: 1,
+},
+
   scrollContent: {
-    paddingBottom: 80,
+    paddingBottom: 40,
     paddingTop: 10,
   },
 

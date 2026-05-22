@@ -10,6 +10,7 @@ import {
   Image,
   ScrollView,
   Dimensions,
+  Platform,
 } from 'react-native';
 
 const {width} = Dimensions.get('window');
@@ -231,6 +232,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+minHeight: 52,
 
     paddingHorizontal: 24,
 
@@ -250,25 +252,31 @@ const styles = StyleSheet.create({
   },
 
   recentsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'center',
+},
 
   recentsText: {
-    fontSize: 20,
-    fontWeight: '700',
+  fontSize: 20,
+  fontWeight: '700',
 
-    color: '#111111',
+  color: '#111111',
 
-    marginRight: 8,
-  },
+  marginRight: 6,
+
+  includeFontPadding: false,
+  textAlignVertical: 'center',
+},
 
   downIcon: {
-    width: 16,
-    height: 16,
+  width: 14,
+  height: 14,
 
-    resizeMode: 'contain',
-  },
+  resizeMode: 'contain',
+
+  marginTop: 2,
+},
 
   nextText: {
     fontSize: 18,

@@ -192,26 +192,69 @@ const styles = StyleSheet.create({
     backgroundColor: '#F3F4F6',
   },
 
+  scrollContainer: {
+  flexGrow: 1,
+  alignItems: 'center',
+  paddingTop: height * 0.015,
+  paddingBottom: 24,
+},
+
+logoSection: {
+  alignItems: 'center',
+  marginBottom: 18,
+},
+
+logo: {
+  width: 92,
+  height: 92,
+},
+
+welcomeText: {
+  fontSize: 34,
+  color: '#A100C8',
+  fontWeight: '500',
+  marginTop: 14,
+},
+
+inputWrapper: {
+  width: width * 0.75,
+  height: 64,
+  borderWidth: 2,
+  borderColor: '#7D7D7D',
+  borderRadius: 28,
+  justifyContent: 'center',
+  paddingHorizontal: 18,
+  marginBottom: 18,
+  backgroundColor: '#F3F4F6',
+},
+
+termsText: {
+  fontSize: 18,
+  color: '#8A00B8',
+  fontWeight: '500',
+  marginTop: 2,
+  marginBottom: 20,
+},
+
+socialText: {
+  fontSize: 18,
+  color: '#111111',
+  marginTop: 24,
+  marginBottom: 20,
+  fontWeight: '400',
+},
+
+socialContainer: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginBottom: 42,
+},
+
   keyboardContainer: {
     flex: 1,
   },
 
-  scrollContainer: {
-    flexGrow: 1,
-    alignItems: 'center',
-    paddingTop: height * 0.05,
-    paddingBottom: 40,
-  },
-
-  logoSection: {
-    alignItems: 'center',
-    marginBottom: 36,
-  },
-
-  logo: {
-    width: 110,
-    height: 110,
-  },
+  
 
   brandText: {
     fontSize: 26,
@@ -220,29 +263,14 @@ const styles = StyleSheet.create({
     marginTop: -2,
   },
 
-  welcomeText: {
-    fontSize: 34,
-    color: '#A100C8',
-    fontWeight: '500',
-    marginTop: 36,
-  },
+  
 
   formContainer: {
     width: '100%',
     alignItems: 'center',
   },
 
-  inputWrapper: {
-    width: width * 0.75,
-    height: 64,
-    borderWidth: 2,
-    borderColor: '#7D7D7D',
-    borderRadius: 28,
-    justifyContent: 'center',
-    paddingHorizontal: 18,
-    marginBottom: 24,
-    backgroundColor: '#F3F4F6',
-  },
+ 
 
   input: {
     fontSize: 17,
@@ -250,13 +278,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 
-  termsText: {
-    fontSize: 18,
-    color: '#8A00B8',
-    fontWeight: '500',
-    marginTop: 2,
-    marginBottom: 34,
-  },
+  
 
   signupButton: {
     width: width * 0.75,
@@ -275,19 +297,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 
-  socialText: {
-    fontSize: 18,
-    color: '#111111',
-    marginTop: 36,
-    marginBottom: 28,
-    fontWeight: '400',
-  },
-
-  socialContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 70,
-  },
+  
 
   socialButton: {
     width: 62,
@@ -329,4 +339,6 @@ const styles = StyleSheet.create({
     color: '#8A00B8',
     fontWeight: '700',
   },
+
+
 });

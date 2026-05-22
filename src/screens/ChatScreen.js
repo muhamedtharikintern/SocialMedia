@@ -566,20 +566,39 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 
-  cameraButton: {
-    width: 52,
-    height: 52,
+  ccameraButton: {
+  width: 52,
+  height: 52,
 
-    alignItems: 'center',
-    justifyContent: 'center',
+  borderRadius: 999,
+
+  backgroundColor: 'rgba(255,255,255,0.92)',
+
+  alignItems: 'center',
+  justifyContent: 'center',
+
+  borderWidth: 1,
+  borderColor: '#F1E5F5',
+
+  shadowColor: '#000',
+  shadowOpacity: 0.05,
+  shadowRadius: 8,
+  shadowOffset: {
+    width: 0,
+    height: 2,
   },
+
+  elevation: 3,
+},
 
   cameraIcon: {
-    width: 34,
-    height: 34,
+  width: 28,
+  height: 28,
 
-    resizeMode: 'contain',
-  },
+  resizeMode: 'contain',
+
+  tintColor: '#D98AF8',
+},
 
   /* =========================
       BOTTOM NAV
