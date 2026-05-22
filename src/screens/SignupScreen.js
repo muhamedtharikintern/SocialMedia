@@ -23,7 +23,7 @@ const SignupScreen = ({navigation}) => {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const handleSignup = () => {
-    navigation.navigate('HomeScreen');
+    navigation.replace('BottomTabs');
   };
 
   const handleLogin = () => {

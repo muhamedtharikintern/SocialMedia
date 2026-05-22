@@ -65,11 +65,9 @@ export default function AIResultScreen({navigation}) {
             style={styles.backButton}
             onPress={() => navigation.goBack()}>
 
-            <Ionicons
-              name="arrow-back"
-              size={34}
-              color="#111111"
-            />
+           <Image
+           source={require('../assets/back.png')}
+           style={{width:40,height:40,resizeMode:'contain'}}/>
 
           </TouchableOpacity>
 

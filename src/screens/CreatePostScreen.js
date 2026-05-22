@@ -10,6 +10,7 @@ import {
   Image,
   Dimensions,
   Pressable,
+  ScrollView,
 } from 'react-native';
 
 const {height, width} = Dimensions.get('window');
@@ -60,7 +61,7 @@ const createOptions = [
     id: 6,
     title: 'AI',
     icon: aiIcon,
-    screen: 'AIScreen',
+    screen: 'CreateAIScreen',
   },
 ];
 
@@ -108,7 +109,9 @@ const CreatePostScreen = ({navigation}) => {
 
         {/* OPTIONS */}
 
-        <View style={styles.optionsContainer}>
+          <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.optionsContainer}>
 
           {createOptions.map(item => (
             <TouchableOpacity
@@ -137,7 +140,7 @@ const CreatePostScreen = ({navigation}) => {
             </TouchableOpacity>
           ))}
 
-        </View>
+        </ScrollView>
 
       </View>
 
@@ -162,17 +165,11 @@ const styles = StyleSheet.create({
   bottom: 0,
 },
 
-  bottomSheet: {
-    width: '100%',
-    height: height * 0.58,
-
-    backgroundColor: '#F5F5F5',
-
-    borderTopLeftRadius: 36,
-    borderTopRightRadius: 36,
-
-    overflow: 'hidden',
-  },
+bottomSheet: {
+  width: '100%',
+  maxHeight: height * 0.78,
+  minHeight: height * 0.68,
+},
 
   handleWrapper: {
     alignItems: 'center',
