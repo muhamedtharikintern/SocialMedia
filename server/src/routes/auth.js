@@ -34,18 +34,18 @@ router.post("/login", async (req, res, next) => {
 
 router.post("/register", async (req, res, next) => {
   try {
-    const { name,username,email, password } = req.body || {};
-    if (!name || !username ||!email || !password) {
+    const { name,email, password } = req.body || {};
+    if (!name  ||!email || !password) {
       return res
         .status(400)
-        .json({ message: "name, username, email and password are required" });
+        .json({ message: "name, email and password are required" });
     }
     const existing = await User.findOne({ email });
     if (existing) {
       return res.status(409).json({ message: "Email already registered" });
     }
     const passwordHash = await bcrypt.hash(password, 10);
-    const user = await User.create({ name,username, email, password:passwordHash });
+    const user = await User.create({ name, email, password:passwordHash });
     const token = jwt.sign(
       { sub: user.id,name: user.name, email: user.email },
       process.env.JWT_SECRET || "dev-secret",
