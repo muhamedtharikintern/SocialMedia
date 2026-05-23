@@ -17,7 +17,7 @@ router.post("/login", async (req, res, next) => {
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
-    const isValid = await bcrypt.compare(password, user.passwordHash);
+    const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
@@ -45,7 +45,7 @@ router.post("/register", async (req, res, next) => {
       return res.status(409).json({ message: "Email already registered" });
     }
     const passwordHash = await bcrypt.hash(password, 10);
-    const user = await User.create({ name, email, passwordHash });
+    const user = await User.create({ name, email, password:passwordHash });
     const token = jwt.sign(
       { sub: user.id,name: user.name, email: user.email },
       process.env.JWT_SECRET || "dev-secret",
