@@ -11,7 +11,7 @@ const upload = multer({
 });
 
 router.post(
-  '/',
+  '/posts',
   upload.single('file'),
   uploadImage
 );
