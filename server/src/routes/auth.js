@@ -35,10 +35,10 @@ router.post("/login", async (req, res, next) => {
 router.post("/register", async (req, res, next) => {
   try {
     const { name,email, password } = req.body || {};
-    if (!name ||!email || !password) {
+    if (!name || !username ||!email || !password) {
       return res
         .status(400)
-        .json({ message: "name, email and password are required" });
+        .json({ message: "name, username, email and password are required" });
     }
     const existing = await User.findOne({ email });
     if (existing) {
