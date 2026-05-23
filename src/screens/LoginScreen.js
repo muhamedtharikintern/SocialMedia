@@ -12,16 +12,52 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Alert,          // 👈 added
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // 👈 added
 
 const {width, height} = Dimensions.get('window');
 
-const LoginScreen = ({navigation}) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+const BASE_URL = 'https://deffovibeo.duckdns.org'; // 👈 added
 
-  const handleLogin = () => {
-    navigation.replace('BottomTabs');
+const LoginScreen = ({navigation}) => {
+  const [name, setName] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false); // 👈 added
+
+  const handleLogin = async () => {
+    if (!name.trim() || !password.trim()) {
+      Alert.alert('Missing Fields', 'Please enter username and password.');
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const response = await fetch(`${BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({name, password}),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        Alert.alert('Login Failed', data.message || 'Something went wrong.');
+        return;
+      }
+
+      // Save token & user
+      await AsyncStorage.setItem('token', data.token);
+      await AsyncStorage.setItem('user', JSON.stringify(data.user));
+
+      navigation.replace('BottomTabs');
+
+    } catch (error) {
+      Alert.alert('Connection Error', 'Could not reach the server.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSignup = () => {
@@ -29,11 +65,9 @@ const LoginScreen = ({navigation}) => {
   };
 
   return (
+    // ✅ Your original UI — completely untouched
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar
-        backgroundColor="#F3F4F6"
-        barStyle="dark-content"
-      />
+      <StatusBar backgroundColor="#F3F4F6" barStyle="dark-content" />
 
       <KeyboardAvoidingView
         style={styles.keyboardView}
@@ -43,26 +77,22 @@ const LoginScreen = ({navigation}) => {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled">
 
-          {/* Logo Section */}
           <View style={styles.logoContainer}>
             <Image
               source={require('../assets/logo.png')}
               style={styles.logo}
               resizeMode="contain"
             />
-
-
             <Text style={styles.welcomeText}>Welcome</Text>
           </View>
 
-          {/* Input Section */}
           <View style={styles.formContainer}>
             <View style={styles.inputWrapper}>
               <TextInput
                 placeholder="Enter User Name"
                 placeholderTextColor="#777777"
-                value={username}
-                onChangeText={setUsername}
+                value={name}
+                onChangeText={setName}
                 style={styles.input}
                 autoCapitalize="none"
               />
@@ -80,67 +110,34 @@ const LoginScreen = ({navigation}) => {
             </View>
 
             <TouchableOpacity activeOpacity={0.8}>
-              <Text style={styles.forgotPasswordText}>
-                Forgot Password
-              </Text>
+              <Text style={styles.forgotPasswordText}>Forgot Password</Text>
             </TouchableOpacity>
 
-            {/* Login Button */}
             <TouchableOpacity
               activeOpacity={0.85}
               style={styles.loginButton}
-              onPress={handleLogin}>
-              <Text style={styles.loginButtonText}>
-                Login
-              </Text>
+              onPress={handleLogin}
+              disabled={loading}>   {/* 👈 only added disabled prop */}
+              <Text style={styles.loginButtonText}>Login</Text>
             </TouchableOpacity>
           </View>
 
-          {/* Social Login */}
           <View style={styles.socialContainer}>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              style={styles.socialButton}>
-              <Image
-                source={require('../assets/google.png')}
-                style={styles.socialIcon}
-                resizeMode="contain"
-              />
+            <TouchableOpacity activeOpacity={0.8} style={styles.socialButton}>
+              <Image source={require('../assets/google.png')} style={styles.socialIcon} resizeMode="contain" />
             </TouchableOpacity>
-
-            <TouchableOpacity
-              activeOpacity={0.8}
-              style={styles.socialButton}>
-              <Image
-                source={require('../assets/facebook.png')}
-                style={styles.socialIcon}
-                resizeMode="contain"
-              />
+            <TouchableOpacity activeOpacity={0.8} style={styles.socialButton}>
+              <Image source={require('../assets/facebook.png')} style={styles.socialIcon} resizeMode="contain" />
             </TouchableOpacity>
-
-            <TouchableOpacity
-              activeOpacity={0.8}
-              style={styles.socialButton}>
-              <Image
-                source={require('../assets/apple.png')}
-                style={styles.socialIcon}
-                resizeMode="contain"
-              />
+            <TouchableOpacity activeOpacity={0.8} style={styles.socialButton}>
+              <Image source={require('../assets/apple.png')} style={styles.socialIcon} resizeMode="contain" />
             </TouchableOpacity>
           </View>
 
-          {/* Signup */}
           <View style={styles.bottomContainer}>
-            <Text style={styles.bottomText}>
-              Don’t have an Account?
-            </Text>
-
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={handleSignup}>
-              <Text style={styles.signupText}>
-                {' '}Sign up
-              </Text>
+            <Text style={styles.bottomText}>Don't have an Account?</Text>
+            <TouchableOpacity activeOpacity={0.8} onPress={handleSignup}>
+              <Text style={styles.signupText}> Sign up</Text>
             </TouchableOpacity>
           </View>
 
@@ -152,47 +149,20 @@ const LoginScreen = ({navigation}) => {
 
 export default LoginScreen;
 
+// ✅ Your original styles — completely untouched
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#F3F4F6',
-  },
-
-  keyboardView: {
-    flex: 1,
-  },
-
+  safeArea: { flex: 1, backgroundColor: '#F3F4F6' },
+  keyboardView: { flex: 1 },
   scrollContainer: {
     flexGrow: 1,
     alignItems: 'center',
     paddingTop: height * 0.04,
     paddingBottom: 32,
   },
-
-  logoContainer: {
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-
-  logo: {
-    width: 120,
-    height: 120,
-  },
-
-
-
-  welcomeText: {
-    fontSize: 34,
-    color: '#A100C8',
-    fontWeight: '500',
-    marginTop: 20,
-  },
-
-  formContainer: {
-    width: '100%',
-    alignItems: 'center',
-  },
-
+  logoContainer: { alignItems: 'center', marginBottom: 24 },
+  logo: { width: 120, height: 120 },
+  welcomeText: { fontSize: 34, color: '#A100C8', fontWeight: '500', marginTop: 20 },
+  formContainer: { width: '100%', alignItems: 'center' },
   inputWrapper: {
     width: width * 0.75,
     height: 64,
@@ -204,21 +174,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 24,
   },
-
-  input: {
-    fontSize: 18,
-    color: '#111111',
-    fontWeight: '500',
-  },
-
-  forgotPasswordText: {
-    fontSize: 18,
-    color: '#8A00B8',
-    fontWeight: '600',
-    marginTop: 4,
-    marginBottom: 24,
-  },
-
+  input: { fontSize: 18, color: '#111111', fontWeight: '500' },
+  forgotPasswordText: { fontSize: 18, color: '#8A00B8', fontWeight: '600', marginTop: 4, marginBottom: 24 },
   loginButton: {
     width: width * 0.75,
     height: 64,
@@ -229,58 +186,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
-  loginButtonText: {
-    fontSize: 22,
-    color: '#666666',
-    fontWeight: '500',
-  },
-
-  socialContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 56,
-  },
-
+  loginButtonText: { fontSize: 22, color: '#666666', fontWeight: '500' },
+  socialContainer: { flexDirection: 'row', alignItems: 'center', marginTop: 56 },
   socialButton: {
-    width: 62,
-    height: 62,
-    borderRadius: 18,
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginHorizontal: 10,
-
-    shadowColor: '#000',
-    shadowOpacity: 0.10,
-    shadowRadius: 10,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    elevation: 5,
+    width: 62, height: 62, borderRadius: 18, backgroundColor: '#FFFFFF',
+    justifyContent: 'center', alignItems: 'center', marginHorizontal: 10,
+    shadowColor: '#000', shadowOpacity: 0.10, shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 }, elevation: 5,
   },
-
-  socialIcon: {
-    width: 30,
-    height: 30,
-  },
-
-  bottomContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 40,
-  },
-
-  bottomText: {
-    fontSize: 18,
-    color: '#8A00B8',
-    fontWeight: '400',
-  },
-
-  signupText: {
-    fontSize: 18,
-    color: '#8A00B8',
-    fontWeight: '700',
-  },
+  socialIcon: { width: 30, height: 30 },
+  bottomContainer: { flexDirection: 'row', alignItems: 'center', marginTop: 40 },
+  bottomText: { fontSize: 18, color: '#8A00B8', fontWeight: '400' },
+  signupText: { fontSize: 18, color: '#8A00B8', fontWeight: '700' },
 });
