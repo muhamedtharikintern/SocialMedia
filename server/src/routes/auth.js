@@ -45,7 +45,7 @@ router.post("/register", async (req, res, next) => {
       return res.status(409).json({ message: "Email already registered" });
     }
     const passwordHash = await bcrypt.hash(password, 10);
-    const user = await User.create({ name, email, password:passwordHash });
+    const user = await User.create({ name,username, email, password:passwordHash });
     const token = jwt.sign(
       { sub: user.id,name: user.name, email: user.email },
       process.env.JWT_SECRET || "dev-secret",
