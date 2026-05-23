@@ -39,6 +39,9 @@ const uploadImage = async (req, res) => {
 
   } catch (error) {
     console.error('Upload Error:', error);
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
 
     return res.status(500).json({
       success: false,
