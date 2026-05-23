@@ -1,14 +1,21 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema(
   {
-    // Full Name
     name: {
       type: String,
       required: true,
       trim: true,
     },
-    // Email Address
+
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      lowercase: true,
+    },
+
     email: {
       type: String,
       required: true,
@@ -16,23 +23,54 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
-    // Password Hash
-    passwordHash: {
+
+    phone: {
       type: String,
       required: true,
+      unique: true,
+      trim: true,
     },
-    // Mobile Number
-    phoneNumber: {
+
+    password: {
       type: String,
-      default: "",
+      required: true,
+      minlength: 6,
     },
-    // Profile Image
-    profileImage: {
+
+    avatar: {
       type: String,
-      default: "",
+      default: '',
+    },
+
+    bio: {
+      type: String,
+      default: '',
+      maxlength: 250,
+    },
+
+    followersCount: {
+      type: Number,
+      default: 0,
+    },
+
+    followingCount: {
+      type: Number,
+      default: 0,
+    },
+
+    postsCount: {
+      type: Number,
+      default: 0,
     },
   },
-  { timestamps: true } 
+  {
+    timestamps: true,
+  }
 );
 
-export default mongoose.model("user", userSchema);
+const User = mongoose.model(
+  'User',
+  userSchema
+);
+
+export default User;
