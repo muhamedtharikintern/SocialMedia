@@ -1,8 +1,8 @@
 import dotenv from "dotenv";
+dotenv.config();
 import app from "./src/app.js";
 import { connectToDatabase } from "./db.js";
 
-dotenv.config();
 
 const port = parseInt(process.env.PORT || "4000", 10);
 
