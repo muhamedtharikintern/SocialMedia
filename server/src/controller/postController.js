@@ -40,4 +40,20 @@ const createPost = async (req, res) => {
   }
 };
 
-export { createPost };
+const getUserPosts = async (req, res) => {
+  try {
+    const posts = await Post.find({ userId: req.userId })
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({ success: true, posts });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch posts',
+      error: error.message,
+    });
+  }
+};
+
+export { createPost, getUserPosts };
+
