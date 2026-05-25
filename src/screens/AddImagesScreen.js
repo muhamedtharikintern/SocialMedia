@@ -1,60 +1,209 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 
 import {
   View,
-  Text,
   StyleSheet,
   SafeAreaView,
   StatusBar,
   TouchableOpacity,
   Image,
-  ScrollView,
+  FlatList,
   Dimensions,
   Platform,
+  Alert,
+  Text,
+  ActivityIndicator,
 } from 'react-native';
+
+import {CameraRoll} from '@react-native-camera-roll/camera-roll';
+
+import {
+  check,
+  request,
+  PERMISSIONS,
+  RESULTS,
+  openSettings,
+} from 'react-native-permissions';
 
 const {width} = Dimensions.get('window');
 
-/* =========================
-   ASSETS
-========================= */
+const ITEM_SIZE = width / 4;
+const PAGE_SIZE = 40; // Load 40 at a time instead of 500
 
 import downIcon from '../assets/down.png';
 
-import image1 from '../assets/gallery1.png';
-import image2 from '../assets/gallery2.png';
-import image3 from '../assets/gallery3.png';
-import image4 from '../assets/gallery4.png';
-import image5 from '../assets/gallery5.png';
-import image6 from '../assets/gallery6.png';
-import image7 from '../assets/gallery7.png';
-import image8 from '../assets/gallery8.png';
-import image9 from '../assets/gallery9.png';
-import image10 from '../assets/gallery10.png';
-import image11 from '../assets/gallery11.png';
-import image12 from '../assets/gallery12.png';
+/* =========================
+   TAB → ASSET TYPE MAP
+========================= */
 
-const galleryImages = [
-  image1,
-  image2,
-  image3,
-  image4,
-  image5,
-  image6,
-  image7,
-  image8,
-  image9,
-  image10,
-  image11,
-  image12,
-];
+const TAB_ASSET_TYPE = {
+  Library: 'Photos',
+  Photo:   'Photos',
+  Video:   'Videos',
+};
 
 const AddImagesScreen = ({navigation}) => {
-  const [selectedImage, setSelectedImage] =
-    useState(galleryImages[0]);
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedTab, setSelectedTab] = useState('Library');
+  const [permissionGranted, setPermissionGranted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [endCursor, setEndCursor] = useState(null);
 
-  const [selectedTab, setSelectedTab] =
-    useState('Library');
+  useEffect(() => {
+    checkAndRequestPermission();
+  }, []);
+
+  useEffect(() => {
+    if (permissionGranted) {
+      loadGalleryImages(TAB_ASSET_TYPE[selectedTab], true);
+    }
+  }, [selectedTab, permissionGranted]);
+
+  /* =========================
+      PERMISSION LOGIC
+  ========================= */
+
+  const getPermissionType = () => {
+    if (Platform.OS === 'ios') {
+      return PERMISSIONS.IOS.PHOTO_LIBRARY;
+    }
+    if (Platform.Version >= 33) {
+      return PERMISSIONS.ANDROID.READ_MEDIA_IMAGES;
+    }
+    return PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
+  };
+
+  const checkAndRequestPermission = async () => {
+    try {
+      const permission = getPermissionType();
+      const status = await check(permission);
+
+      switch (status) {
+        case RESULTS.GRANTED:
+        case RESULTS.LIMITED:
+          setPermissionGranted(true);
+          break;
+
+        case RESULTS.DENIED:
+          const result = await request(permission);
+          if (result === RESULTS.GRANTED || result === RESULTS.LIMITED) {
+            setPermissionGranted(true);
+          }
+          break;
+
+        case RESULTS.BLOCKED:
+          Alert.alert(
+            'Gallery Permission Required',
+            'Please enable gallery access in your device settings.',
+            [
+              {text: 'Cancel', style: 'cancel'},
+              {text: 'Open Settings', onPress: () => openSettings()},
+            ],
+          );
+          break;
+      }
+    } catch (error) {
+      console.log('Permission Error:', error.message);
+    }
+  };
+
+  /* =========================
+      LOAD GALLERY (paginated)
+  ========================= */
+
+  const loadGalleryImages = async (
+    assetType = 'Photos',
+    reset = false,
+    cursor = null,
+  ) => {
+    if (loading) return;
+
+    try {
+      setLoading(true);
+
+      if (reset) {
+        setGalleryImages([]);
+        setSelectedImage(null);
+        setEndCursor(null);
+        setHasNextPage(false);
+      }
+
+      const params = {
+        first: PAGE_SIZE,
+        assetType,
+        include: ['filename'],
+      };
+
+      if (cursor) {
+        params.after = cursor;
+      }
+
+      const photos = await CameraRoll.getPhotos(params);
+
+      const uris = photos.edges
+        .map(item => item.node.image.uri)
+        .filter(Boolean);
+
+      setGalleryImages(prev => (reset ? uris : [...prev, ...uris]));
+      setHasNextPage(photos.page_info.has_next_page);
+      setEndCursor(photos.page_info.end_cursor);
+
+      if (reset && uris.length > 0) {
+        setSelectedImage(uris[0]);
+      }
+    } catch (error) {
+      console.log('Gallery Load Error:', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* =========================
+      LOAD MORE (pagination)
+  ========================= */
+
+  const loadMore = () => {
+    if (hasNextPage && !loading) {
+      loadGalleryImages(TAB_ASSET_TYPE[selectedTab], false, endCursor);
+    }
+  };
+
+  /* =========================
+      RENDER GALLERY ITEM
+      (memoized to avoid re-renders)
+  ========================= */
+
+  const renderItem = useCallback(
+    ({item}) => {
+      const isActive = selectedImage === item;
+      return (
+        <TouchableOpacity
+          activeOpacity={0.9}
+          onPress={() => setSelectedImage(item)}
+          style={[
+            styles.imageWrapper,
+            isActive && styles.activeImageWrapper,
+          ]}>
+          <Image
+            source={{uri: item}}
+            style={styles.galleryImage}
+            // Key perf props:
+            resizeMode="cover"
+            fadeDuration={0} // no fade animation = faster
+          />
+        </TouchableOpacity>
+      );
+    },
+    [selectedImage],
+  );
+
+  const keyExtractor = useCallback((item, index) => `${item}-${index}`, []);
+
+  /* =========================
+      RENDER
+  ========================= */
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -66,142 +215,95 @@ const AddImagesScreen = ({navigation}) => {
 
       <View style={styles.container}>
 
-        {/* =========================
-            HEADER
-        ========================= */}
-
+        {/* HEADER */}
         <View style={styles.header}>
-
           <TouchableOpacity
             activeOpacity={0.8}
-            onPress={() =>
-              navigation.goBack()
-            }>
-            <Text style={styles.cancelText}>
-              Cancel
-            </Text>
+            onPress={() => navigation.goBack()}>
+            <Text style={styles.cancelText}>Cancel</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             activeOpacity={0.8}
             style={styles.recentsContainer}>
-
-            <Text style={styles.recentsText}>
-              Recents
-            </Text>
-
-            <Image
-              source={downIcon}
-              style={styles.downIcon}
-            />
-
+            <Text style={styles.recentsText}>Recents</Text>
+            <Image source={downIcon} style={styles.downIcon} />
           </TouchableOpacity>
 
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() =>
-              navigation.navigate(
-                'PostScreen',
-              )
+              navigation.navigate('PostScreen', {selectedImage})
             }>
-            <Text style={styles.nextText}>
-              Next
-            </Text>
+            <Text style={styles.nextText}>Next</Text>
           </TouchableOpacity>
-
         </View>
 
-        {/* =========================
-            SELECTED IMAGE
-        ========================= */}
+        {/* SELECTED IMAGE / VIDEO PREVIEW */}
+        {selectedImage ? (
+          <Image
+            source={{uri: selectedImage}}
+            style={styles.selectedImage}
+            resizeMode="cover"
+            fadeDuration={0}
+          />
+        ) : (
+          <View style={styles.selectedImagePlaceholder} />
+        )}
 
-        <Image
-          source={selectedImage}
-          style={styles.selectedImage}
+        {/* GALLERY GRID — FlatList for lazy rendering */}
+        <FlatList
+          data={galleryImages}
+          renderItem={renderItem}
+          keyExtractor={keyExtractor}
+          numColumns={4}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.galleryContainer}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.5}
+          // Performance props
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={20}
+          windowSize={10}
+          initialNumToRender={20}
+          getItemLayout={(data, index) => ({
+            length: ITEM_SIZE,
+            offset: ITEM_SIZE * Math.floor(index / 4),
+            index,
+          })}
+          ListFooterComponent={
+            loading ? (
+              <ActivityIndicator
+                size="small"
+                color="#A7A7A7"
+                style={styles.loader}
+              />
+            ) : null
+          }
         />
 
-        {/* =========================
-            GALLERY
-        ========================= */}
-
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={
-            styles.galleryContainer
-          }>
-
-          <View style={styles.galleryGrid}>
-
-            {galleryImages.map(
-              (item, index) => {
-                const isActive =
-                  selectedImage === item;
-
-                return (
-                  <TouchableOpacity
-                    key={index}
-                    activeOpacity={0.9}
-                    onPress={() =>
-                      setSelectedImage(item)
-                    }
-                    style={[
-                      styles.imageWrapper,
-                      isActive &&
-                        styles.activeImageWrapper,
-                    ]}>
-
-                    <Image
-                      source={item}
-                      style={styles.galleryImage}
-                    />
-
-                  </TouchableOpacity>
-                );
-              },
-            )}
-
-          </View>
-
-        </ScrollView>
-
-        {/* =========================
-            BOTTOM TABS
-        ========================= */}
-
+        {/* BOTTOM TABS */}
         <View style={styles.bottomTabs}>
-
-          {['Library', 'Photo', 'Video'].map(
-            item => {
-              const isSelected =
-                selectedTab === item;
-
-              return (
-                <TouchableOpacity
-                  key={item}
-                  activeOpacity={0.8}
-                  onPress={() =>
-                    setSelectedTab(item)
-                  }
-                  style={styles.bottomTabButton}>
-
-                  <Text
-                    style={[
-                      styles.bottomTabText,
-                      isSelected &&
-                        styles.activeBottomTabText,
-                    ]}>
-                    {item}
-                  </Text>
-
-                </TouchableOpacity>
-              );
-            },
-          )}
-
+          {['Library', 'Photo', 'Video'].map(item => {
+            const isSelected = selectedTab === item;
+            return (
+              <TouchableOpacity
+                key={item}
+                activeOpacity={0.8}
+                onPress={() => setSelectedTab(item)}
+                style={styles.bottomTabButton}>
+                <Text
+                  style={[
+                    styles.bottomTabText,
+                    isSelected && styles.activeBottomTabText,
+                  ]}>
+                  {item}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
-
       </View>
-
     </SafeAreaView>
   );
 };
@@ -212,11 +314,7 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#F5F5F5',
-
-    paddingTop:
-      Platform.OS === 'android'
-        ? StatusBar.currentHeight
-        : 0,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
 
   container: {
@@ -224,97 +322,70 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
   },
 
-  /* =========================
-      HEADER
-  ========================= */
-
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-minHeight: 52,
-
+    minHeight: 52,
     paddingHorizontal: 24,
-
-    paddingTop:
-      Platform.OS === 'ios'
-        ? 20
-        : 16,
-
+    paddingTop: Platform.OS === 'ios' ? 20 : 16,
     paddingBottom: 20,
   },
 
   cancelText: {
     fontSize: 18,
     fontWeight: '500',
-
     color: '#111111',
   },
 
   recentsContainer: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'center',
-},
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 
   recentsText: {
-  fontSize: 20,
-  fontWeight: '700',
-
-  color: '#111111',
-
-  marginRight: 6,
-
-  includeFontPadding: false,
-  textAlignVertical: 'center',
-},
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#111111',
+    marginRight: 6,
+    includeFontPadding: false,
+    textAlignVertical: 'center',
+  },
 
   downIcon: {
-  width: 14,
-  height: 14,
-
-  resizeMode: 'contain',
-
-  marginTop: 2,
-},
+    width: 14,
+    height: 14,
+    resizeMode: 'contain',
+    marginTop: 2,
+  },
 
   nextText: {
     fontSize: 18,
     fontWeight: '500',
-
     color: '#3797FF',
   },
 
-  /* =========================
-      SELECTED IMAGE
-  ========================= */
-
   selectedImage: {
     width: width,
-    height: width * 1,
-
-    resizeMode: 'cover',
-
+    height: width,
     marginBottom: 2,
   },
 
-  /* =========================
-      GALLERY
-  ========================= */
+  selectedImagePlaceholder: {
+    width: width,
+    height: width,
+    backgroundColor: '#E0E0E0',
+    marginBottom: 2,
+  },
 
   galleryContainer: {
     paddingBottom: 120,
   },
 
-  galleryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-
   imageWrapper: {
-    width: width / 4,
-    height: width / 4,
-
+    width: ITEM_SIZE,
+    height: ITEM_SIZE,
     padding: 1,
   },
 
@@ -325,31 +396,23 @@ minHeight: 52,
   galleryImage: {
     width: '100%',
     height: '100%',
-
-    borderRadius: 20,
-
-    resizeMode: 'cover',
+    borderRadius: 4,
   },
 
-  /* =========================
-      BOTTOM TABS
-  ========================= */
+  loader: {
+    paddingVertical: 16,
+  },
 
   bottomTabs: {
     position: 'absolute',
     bottom: 0,
-
     width: '100%',
-
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
-
     backgroundColor: '#F5F5F5',
-
     paddingTop: 18,
     paddingBottom: 36,
-
     borderTopWidth: 1,
     borderTopColor: '#ECECEC',
   },
@@ -362,7 +425,6 @@ minHeight: 52,
   bottomTabText: {
     fontSize: 18,
     fontWeight: '500',
-
     color: '#A7A7A7',
   },
 
