@@ -42,7 +42,7 @@ const authMiddleware = async (
     );
 
     req.userId =
-      decoded.userId;
+      decoded.sub;
 
     next();
 
