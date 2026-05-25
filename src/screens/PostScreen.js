@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ImageResizer from 'react-native-image-resizer';
 
 const {width} = Dimensions.get('window');
 const BASE_URL = 'https://deffovibeo.duckdns.org';
@@ -61,6 +62,8 @@ const PostScreen = ({navigation, route}) => {
       UPLOAD POST
   ========================= */
 
+
+
   const uploadPost = async () => {
     if (!selectedImage) {
       Alert.alert('No image selected');
@@ -77,10 +80,19 @@ const PostScreen = ({navigation, route}) => {
         return;
       }
 
+        const resized = await ImageResizer.createResizedImage(
+          selectedImage,
+          1080,      // max width
+          1080,      // max height
+          'JPEG',
+          80,        // quality (0-100)
+          0,         // rotation
+        );
+
       // ── STEP 1: Upload image to S3 ───────────────
       const formData = new FormData();
       formData.append('file', {
-        uri:  selectedImage,
+        uri:  resized.uri,
         name: `post_${Date.now()}.jpg`,
         type: 'image/jpeg',
       });
