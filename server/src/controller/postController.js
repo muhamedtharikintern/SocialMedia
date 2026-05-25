@@ -2,12 +2,14 @@ import Post from '../models/Posts.js';
 
 const createPost = async (req, res) => {
   try {
-    const { userId, caption, hashtags, visibility, url, type } = req.body;
+    const { caption, hashtags, visibility, url, type } = req.body;
+
+    const userId = req.userId; // 👈 comes from authMiddleware, not body
 
     if (!userId) {
-      return res.status(400).json({
+      return res.status(401).json({
         success: false,
-        message: 'userId is required',
+        message: 'Unauthorized',
       });
     }
 
@@ -23,18 +25,10 @@ const createPost = async (req, res) => {
       caption:    caption    ?? '',
       hashtags:   hashtags   ? JSON.parse(hashtags) : [],
       visibility: visibility ?? 'public',
-      media: [
-        {
-          url,
-          type: type ?? 'image',
-        },
-      ],
+      media: [{ url, type: type ?? 'image' }],
     });
 
-    return res.status(201).json({
-      success: true,
-      post,
-    });
+    return res.status(201).json({ success: true, post });
 
   } catch (error) {
     console.error('Post Create Error:', error.message);
