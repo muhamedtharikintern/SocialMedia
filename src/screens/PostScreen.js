@@ -35,6 +35,21 @@ import privateIcon    from '../assets/private.png';
 import arrowRightIcon from '../assets/next.png';
 import shareIcon      from '../assets/share.png';
 
+/* =========================
+   HELPER: Safe JSON parse
+========================= */
+
+const safeParseJSON = async response => {
+  const rawText = await response.text();
+  try {
+    return JSON.parse(rawText);
+  } catch (e) {
+    throw new Error(
+      'Server returned invalid response: ' + rawText.slice(0, 150),
+    );
+  }
+};
+
 const PostScreen = ({navigation, route}) => {
   const {selectedImage} = route?.params;
 
@@ -73,13 +88,15 @@ const PostScreen = ({navigation, route}) => {
       const uploadRes = await fetch(`${BASE_URL}/upload/posts`, {
         method:  'POST',
         headers: {
-          'Content-Type':  'multipart/form-data',
+          // ✅ Do NOT set Content-Type manually for FormData.
+          // React Native sets it automatically with the correct boundary.
           'Authorization': `Bearer ${token}`,
         },
         body: formData,
       });
 
-      const uploadData = await uploadRes.json();
+      // ✅ Safe JSON parse — shows raw response if server returns HTML
+      const uploadData = await safeParseJSON(uploadRes);
 
       if (!uploadRes.ok || !uploadData.success) {
         throw new Error(uploadData.message ?? 'Image upload failed');
@@ -103,7 +120,8 @@ const PostScreen = ({navigation, route}) => {
         }),
       });
 
-      const postData = await postRes.json();
+      // ✅ Safe JSON parse for post creation response too
+      const postData = await safeParseJSON(postRes);
 
       if (!postRes.ok || !postData.success) {
         throw new Error(postData.message ?? 'Post creation failed');
@@ -116,7 +134,7 @@ const PostScreen = ({navigation, route}) => {
       ]);
 
     } catch (err) {
-      console.error('Error:', err.message);
+      console.error('Upload error:', err.message);
       Alert.alert('Error', err.message);
     } finally {
       setUploading(false);
