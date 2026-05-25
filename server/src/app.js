@@ -4,8 +4,9 @@ import morgan from "morgan";
 
 import authRouter from "./routes/auth.js";
 import uploadRouter from "./routes/uploadRoutes.js";
+import postRouter from "./routes/postRoutes.js";
 
-;
+
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 // Routes
 app.use('/auth', authRouter);
 app.use("/upload",uploadRouter);
+app.use('/posts', postRouter);
 
 export default app;
 

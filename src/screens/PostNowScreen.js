@@ -41,6 +41,8 @@ export default function PostNowScreen({navigation}) {
     },
   ];
 
+  
+
   const actionItems = [
     {
       id: 1,
@@ -58,6 +60,8 @@ export default function PostNowScreen({navigation}) {
       icon: require('../assets/music.png'),
     },
   ];
+
+  
 
   return (
     <SafeAreaView style={styles.container}>

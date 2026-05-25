@@ -2,6 +2,7 @@ import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
+import SplashScreen from '../screens/SplashScreen';
 import LoginScreen from '../screens/LoginScreen';
 import BottomTabs from './BottomTabs';
 import SignupScreen from '../screens/SignupScreen'
@@ -30,7 +31,10 @@ const Stack = createNativeStackNavigator();
 
 const AppNavigator = () => {
   return (
-      <Stack.Navigator>
+      <Stack.Navigator  initialRouteName="SplashScreen"   // 👈 start here
+        screenOptions={{ headerShown: false }}>
+        
+    <Stack.Screen name="SplashScreen" component={SplashScreen} options={{headerShown:false}}/>    
     <Stack.Screen name="LoginScreen" component={LoginScreen} options={{headerShown: false}}/>
     <Stack.Screen name="BottomTabs" component={BottomTabs} options={{headerShown: false}}/>
     <Stack.Screen name="SignupScreen" component={SignupScreen} options={{headerShown: false}}/>

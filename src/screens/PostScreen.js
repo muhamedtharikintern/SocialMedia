@@ -10,11 +10,13 @@ import {
   Image,
   ScrollView,
   Switch,
+  Alert,
   Platform,
   Dimensions,
 } from 'react-native';
 
 const {width} = Dimensions.get('window');
+const BASE_URL = 'https://deffovibeo.duckdns.org';
 
 /* =========================
    ASSETS
@@ -35,12 +37,79 @@ import shareIcon from '../assets/share.png';
 
 import postImage from '../assets/post_image.png';
 
-const PostScreen = ({navigation}) => {
+const PostScreen = ({navigation, route}) => {
+    const {selectedImage} = route?.params;
   const [shareToApps, setShareToApps] =
     useState(true);
 
   const [selectedPrivacy, setSelectedPrivacy] =
     useState('followers');
+const [uploading, setUploading] = useState(false);
+
+const uploadPost = async () => {
+  if (!selectedImage) {
+    Alert.alert('No image selected');
+    return;
+  }
+
+  try {
+    setUploading(true);
+
+    // ── STEP 1: Upload image to S3 ──────────────
+    const formData = new FormData();
+    formData.append('file', {
+      uri:  selectedImage,
+      name: `post_${Date.now()}.jpg`,
+      type: 'image/jpeg',
+    });
+
+    const uploadRes = await fetch(`${BASE_URL}/upload/posts`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'multipart/form-data' },
+      body:    formData,
+    });
+
+    const uploadData = await uploadRes.json();
+
+    if (!uploadRes.ok || !uploadData.success) {
+      throw new Error(uploadData.message ?? 'Image upload failed');
+    }
+
+    console.log('S3 URL:', uploadData.url);
+
+    // ── STEP 2: Save post to MongoDB ─────────────
+    const postRes = await fetch(`${BASE_URL}/posts/post-create`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId:     'YOUR_LOGGED_IN_USER_ID',
+        caption:    '"Bathing in sunlight and blooming like a sunflower."',
+        hashtags:   JSON.stringify(['AIArt', 'Digitalcreativity', 'CreateAI']),
+        visibility: selectedPrivacy,
+        url:        uploadData.url,   // ← S3 URL from step 1
+        type:       uploadData.type,  // ← 'image' or 'video'
+      }),
+    });
+
+    const postData = await postRes.json();
+
+    if (!postRes.ok || !postData.success) {
+      throw new Error(postData.message ?? 'Post creation failed');
+    }
+
+    console.log('Post created:', postData.post._id);
+
+    Alert.alert('Posted!', 'Your post is live.', [
+      { text: 'OK', onPress: () => navigation.goBack() },
+    ]);
+
+  } catch (err) {
+    console.error('Error:', err.message);
+    Alert.alert('Error', err.message);
+  } finally {
+    setUploading(false);
+  }
+};
 
   const renderPrivacyButton = (
     type,
@@ -162,7 +231,7 @@ const PostScreen = ({navigation}) => {
         ========================= */}
 
         <Image
-          source={postImage}
+          source={selectedImage}
           style={styles.previewImage}
         />
 
@@ -285,6 +354,7 @@ const PostScreen = ({navigation}) => {
         ========================= */}
 
         <TouchableOpacity
+          onPress={uploadPost}
           activeOpacity={0.85}
           style={styles.postButton}>
 
