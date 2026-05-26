@@ -55,5 +55,21 @@ const getUserPosts = async (req, res) => {
   }
 };
 
-export { createPost, getUserPosts };
+const getAllPosts = async (req, res) => {
+  try {
+    const posts = await Post.find()
+      .populate('userId', 'username profileImage')
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({ success: true, posts });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch posts',
+      error: error.message,
+    });
+  }
+};
+
+export { createPost, getUserPosts, getAllPosts };
 
