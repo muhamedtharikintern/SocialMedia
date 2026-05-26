@@ -133,8 +133,8 @@ const HomeScreen = ({navigation}) => {
     const isLiked    = likedPosts.includes(item._id);
     const mediaUrl   = item.media?.[0]?.url;
     const username   = item.userId?.username ?? 'user';
-    const profileImg = item.userId?.profileImage
-      ? {uri: item.userId.profileImage}
+    const profileImg = item.userId?.avatar
+      ? {uri: item.userId.avatar}
       : require('../assets/profile1.png');
 
     return (
