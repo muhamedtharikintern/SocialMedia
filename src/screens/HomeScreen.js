@@ -58,7 +58,7 @@ const HomeScreen = ({navigation}) => {
         return;
       }
 
-      const res = await fetch(`${BASE_URL}/posts/all-posts`, {
+      const res = await fetch(`${BASE_URL}/posts/feed`, {
         method:  'GET',
         headers: {
           'Content-Type':  'application/json',
