@@ -58,7 +58,7 @@ const getUserPosts = async (req, res) => {
 const getAllPosts = async (req, res) => {
   try {
     const posts = await Post.find()
-      .populate('userId', 'username profileImage')
+      .populate('userId', 'username avatar')
       .sort({ createdAt: -1 });
 
     return res.status(200).json({ success: true, posts });
