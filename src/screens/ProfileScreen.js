@@ -19,13 +19,52 @@ import ReelScreen    from './ReelScreen';
 import ReshareScreen from './ReshareScreen';
 import TagScreen     from './TagScreen';
 
-const {width}   = Dimensions.get('window');
-const BASE_URL  = 'https://deffovibeo.duckdns.org';
+const {width}  = Dimensions.get('window');
+const BASE_URL = 'https://deffovibeo.duckdns.org';
+
+import defaultAvatar from '../assets/profile.png';
 
 export default function ProfileScreen({navigation}) {
   const [activeTab,    setActiveTab]    = useState('posts');
   const [posts,        setPosts]        = useState([]);
   const [loadingPosts, setLoadingPosts] = useState(false);
+
+  // profile state
+  const [profile,        setProfile]        = useState(null);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+
+  const highlights = [
+    {id: 1, title: 'Highlights', image: require('../assets/highlight1.png')},
+    {id: 2, title: 'Workout',    image: require('../assets/highlight2.png')},
+  ];
+
+  /* =========================
+      FETCH PROFILE
+  ========================= */
+
+  const fetchProfile = useCallback(async () => {
+    try {
+      setLoadingProfile(true);
+      const token = await AsyncStorage.getItem('token');
+      if (!token) return;
+
+      const res  = await fetch(`${BASE_URL}/user/profile`, {
+        method:  'GET',
+        headers: {
+          'Content-Type':  'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.message);
+      setProfile(data.user);
+    } catch (err) {
+      console.error('Profile fetch error:', err.message);
+      Alert.alert('Error', err.message);
+    } finally {
+      setLoadingProfile(false);
+    }
+  }, []);
 
   /* =========================
       FETCH USER POSTS
@@ -34,27 +73,21 @@ export default function ProfileScreen({navigation}) {
   const fetchUserPosts = useCallback(async () => {
     try {
       setLoadingPosts(true);
-
       const token = await AsyncStorage.getItem('token');
       if (!token) {
         Alert.alert('Error', 'Session expired. Please login again.');
         return;
       }
 
-      const res = await fetch(`${BASE_URL}/posts/my-posts`, {
+      const res  = await fetch(`${BASE_URL}/posts/my-posts`, {
         method:  'GET',
         headers: {
           'Content-Type':  'application/json',
           'Authorization': `Bearer ${token}`,
         },
       });
-
       const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        throw new Error(data.message ?? 'Failed to fetch posts');
-      }
-
+      if (!res.ok || !data.success) throw new Error(data.message ?? 'Failed to fetch posts');
       setPosts(data.posts);
     } catch (err) {
       console.error('Fetch posts error:', err.message);
@@ -64,24 +97,38 @@ export default function ProfileScreen({navigation}) {
     }
   }, []);
 
-  // fetch on mount and whenever the screen comes back into focus
+  // refetch both profile + posts every time screen comes into focus
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', fetchUserPosts);
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchProfile();
+      fetchUserPosts();
+    });
     return unsubscribe;
-  }, [navigation, fetchUserPosts]);
+  }, [navigation, fetchProfile, fetchUserPosts]);
 
   /* =========================
-      DATA
+      DERIVED VALUES
   ========================= */
 
-  const highlights = [
-    {id: 1, title: 'Highlights', image: require('../assets/highlight1.png')},
-    {id: 2, title: 'Workout',    image: require('../assets/highlight2.png')},
-  ];
+  const avatarSource = profile?.avatar
+    ? {uri: profile.avatar}
+    : defaultAvatar;
+
+  const displayName     = profile?.name     ?? '';
+  const displayUsername = profile?.username ?? '';
+  const displayBio      = profile?.bio      ?? '';
 
   /* =========================
       RENDER
   ========================= */
+
+  if (loadingProfile) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <ActivityIndicator size="large" color="#A100C8" style={{marginTop: 80}} />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -102,8 +149,9 @@ export default function ProfileScreen({navigation}) {
             />
           </TouchableOpacity>
 
+          {/* shows real username from server */}
           <View style={styles.usernameContainer}>
-            <Text style={styles.username}>arunvijay</Text>
+            <Text style={styles.username}>{displayUsername}</Text>
             <Image
               source={require('../assets/verified.png')}
               style={{height: 24, width: 24, resizeMode: 'contain'}}
@@ -124,8 +172,9 @@ export default function ProfileScreen({navigation}) {
         <View style={styles.profileSection}>
           <View style={styles.profileImageContainer}>
             <View style={styles.profileRing}>
+              {/* shows real avatar from server */}
               <Image
-                source={require('../assets/profile.png')}
+                source={avatarSource}
                 style={styles.profileImage}
               />
             </View>
@@ -143,11 +192,15 @@ export default function ProfileScreen({navigation}) {
               <Text style={styles.statLabel}>posts</Text>
             </View>
             <View style={styles.statItem}>
-              <Text style={styles.statNumber}>2M</Text>
+              <Text style={styles.statNumber}>
+                {profile?.followersCount ?? 0}
+              </Text>
               <Text style={styles.statLabel}>followers</Text>
             </View>
             <View style={styles.statItem}>
-              <Text style={styles.statNumber}>23</Text>
+              <Text style={styles.statNumber}>
+                {profile?.followingCount ?? 0}
+              </Text>
               <Text style={styles.statLabel}>following</Text>
             </View>
           </View>
@@ -155,11 +208,15 @@ export default function ProfileScreen({navigation}) {
 
         {/* BIO */}
         <View style={styles.bioContainer}>
-          <Text style={styles.nameText}>Arun Vijay</Text>
-          <Text style={styles.roleText}>Actor</Text>
-          <Text style={styles.bioText}>
-            Actor by Profession... Passionate Skydiver!!
-          </Text>
+          {/* shows real name from server */}
+          {displayName ? (
+            <Text style={styles.nameText}>{displayName}</Text>
+          ) : null}
+
+          {/* shows real bio from server */}
+          {displayBio ? (
+            <Text style={styles.bioText}>{displayBio}</Text>
+          ) : null}
         </View>
 
         {/* ACTION BUTTONS */}
@@ -239,15 +296,10 @@ export default function ProfileScreen({navigation}) {
         {/* TAB CONTENT */}
         <View style={styles.tabContent}>
 
-          {/* POSTS */}
           {activeTab === 'posts' && (
             <>
               {loadingPosts ? (
-                <ActivityIndicator
-                  size="large"
-                  color="#A100C8"
-                  style={{marginTop: 40}}
-                />
+                <ActivityIndicator size="large" color="#A100C8" style={{marginTop: 40}} />
               ) : posts.length === 0 ? (
                 <View style={styles.emptyContainer}>
                   <Text style={styles.emptyText}>No posts yet</Text>
@@ -296,9 +348,9 @@ const styles = StyleSheet.create({
     marginBottom:      26,
   },
   iconButton: {
-    width:         56,
-    height:        56,
-    borderRadius:  28,
+    width:           56,
+    height:          56,
+    borderRadius:    28,
     backgroundColor: '#FFFFFF',
     justifyContent:  'center',
     alignItems:      'center',
@@ -318,21 +370,21 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   profileSection: {
-    flexDirection:  'row',
-    alignItems:     'center',
+    flexDirection:     'row',
+    alignItems:        'center',
     paddingHorizontal: 20,
   },
   profileImageContainer: {
     position: 'relative',
   },
   profileRing: {
-    width:         108,
-    height:        108,
-    borderRadius:  54,
-    borderWidth:   4,
-    borderColor:   '#A100C8',
-    justifyContent:'center',
-    alignItems:    'center',
+    width:          108,
+    height:         108,
+    borderRadius:   54,
+    borderWidth:    4,
+    borderColor:    '#A100C8',
+    justifyContent: 'center',
+    alignItems:     'center',
   },
   profileImage: {
     width:        94,
@@ -340,12 +392,12 @@ const styles = StyleSheet.create({
     borderRadius: 47,
   },
   addStoryButton: {
-    position:      'absolute',
-    bottom:        2,
-    right:         2,
-    width:         32,
-    height:        32,
-    borderRadius:  16,
+    position:        'absolute',
+    bottom:          2,
+    right:           2,
+    width:           32,
+    height:          32,
+    borderRadius:    16,
     backgroundColor: '#A100C8',
     justifyContent:  'center',
     alignItems:      'center',
@@ -362,9 +414,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statNumber: {
-    fontSize:   24,
-    color:      '#111111',
-    fontWeight: '700',
+    fontSize:     24,
+    color:        '#111111',
+    fontWeight:   '700',
     marginBottom: 4,
   },
   statLabel: {
@@ -377,16 +429,10 @@ const styles = StyleSheet.create({
     marginTop:         18,
   },
   nameText: {
-    fontSize:   18,
-    color:      '#111111',
-    fontWeight: '700',
+    fontSize:     18,
+    color:        '#111111',
+    fontWeight:   '700',
     marginBottom: 6,
-  },
-  roleText: {
-    fontSize:   16,
-    color:      '#111111',
-    fontWeight: '600',
-    marginBottom: 4,
   },
   bioText: {
     fontSize:   15,
@@ -395,18 +441,18 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   actionContainer: {
-    flexDirection:  'row',
-    justifyContent: 'space-between',
+    flexDirection:     'row',
+    justifyContent:    'space-between',
     paddingHorizontal: 20,
     marginTop:         22,
   },
   actionButton: {
-    width:          '48%',
-    height:         48,
+    width:           '48%',
+    height:          48,
     backgroundColor: '#EFDDF2',
-    borderRadius:   14,
-    justifyContent: 'center',
-    alignItems:     'center',
+    borderRadius:    14,
+    justifyContent:  'center',
+    alignItems:      'center',
   },
   actionButtonText: {
     fontSize:   16,
@@ -422,13 +468,13 @@ const styles = StyleSheet.create({
     marginRight: 20,
   },
   newHighlight: {
-    width:         100,
-    height:        100,
-    borderRadius:  50,
-    borderWidth:   4,
-    borderColor:   '#A100C8',
-    justifyContent:'center',
-    alignItems:    'center',
+    width:           100,
+    height:          100,
+    borderRadius:    50,
+    borderWidth:     4,
+    borderColor:     '#A100C8',
+    justifyContent:  'center',
+    alignItems:      'center',
     backgroundColor: '#FFFFFF',
   },
   highlightImage: {
@@ -443,11 +489,11 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   tabContainer: {
-    flexDirection:  'row',
-    justifyContent: 'space-around',
-    alignItems:     'center',
-    marginTop:      28,
-    marginBottom:   18,
+    flexDirection:     'row',
+    justifyContent:    'space-around',
+    alignItems:        'center',
+    marginTop:         28,
+    marginBottom:      18,
     paddingHorizontal: 12,
   },
   tabButton: {
@@ -468,9 +514,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   gridContainer: {
-    flexDirection: 'row',
-    flexWrap:      'wrap',
-    justifyContent:'space-between',
+    flexDirection:  'row',
+    flexWrap:       'wrap',
+    justifyContent: 'space-between',
   },
   postImage: {
     width:        imageSize,
@@ -488,6 +534,3 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 });
-
-
-
