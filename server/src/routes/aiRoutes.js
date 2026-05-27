@@ -5,8 +5,10 @@ import {
   debugAI,
   generateCaptionFromImage,
 } from '../controller/aiController.js';
+import multer  from 'multer';
 
 const router = express.Router();
+const upload = multer({ storage: multer.memoryStorage() }); 
 
 // ── Debug route — hit this first to diagnose issues ──
 router.get('/debug', debugAI);
