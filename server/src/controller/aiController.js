@@ -3,18 +3,32 @@ import axios from 'axios';
 const HF_API_URL =
   'https://api-inference.huggingface.co/models/google/flan-t5-large';
 
-const HF_HEADERS = {
-  Authorization: `Bearer ${process.env.HF_TOKEN}`,
-  'Content-Type': 'application/json',
-};
-
 /* ─────────────────────────────────────────────────────────────
    HELPER: Call HuggingFace with retry on model-loading state
    ───────────────────────────────────────────────────────────── */
 
 const callHuggingFace = async (inputs, retries = 3) => {
+
+  // ── CRITICAL: Check token exists before any call ──────────────
+  const token = process.env.HF_TOKEN;
+
+  if (!token) {
+    console.error('❌ HF_TOKEN is missing from environment variables!');
+    throw new Error('HF_TOKEN not configured on server.');
+  }
+
+  console.log('✅ HF_TOKEN found, length:', token.length);
+
+  const HF_HEADERS = {
+    Authorization: `Bearer ${token}`,
+    'Content-Type': 'application/json',
+  };
+
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
+      console.log(`\n🔁 HF Attempt ${attempt}/${retries}`);
+      console.log('📤 Input:', inputs);
+
       const response = await axios.post(
         HF_API_URL,
         {
@@ -24,40 +38,70 @@ const callHuggingFace = async (inputs, retries = 3) => {
             temperature: 0.7,
             do_sample: true,
           },
-          // Tell HF to wait for model to load instead of erroring
-          options: { wait_for_model: true },
+          options: {
+            wait_for_model: true,
+            use_cache: false,
+          },
         },
-        { headers: HF_HEADERS },
+        {
+          headers: HF_HEADERS,
+          timeout: 60000,
+        },
       );
 
-      console.log(`HF Response (attempt ${attempt}):`, response.data);
+      console.log('📥 HF Raw Response:', JSON.stringify(response.data));
 
-      // Handle array or object response shape
       const generated = Array.isArray(response.data)
         ? response.data[0]?.generated_text || ''
         : response.data?.generated_text || '';
 
+      console.log('✅ Generated text:', generated);
+
       if (generated) return generated;
 
-      // Empty text — retry
-      console.log(`Empty generated_text on attempt ${attempt}, retrying...`);
+      console.log(`⚠️ Empty generated_text on attempt ${attempt}, retrying...`);
 
     } catch (error) {
+      const status = error.response?.status;
       const errData = error.response?.data;
-      console.log(`HF Error (attempt ${attempt}):`, errData || error.message);
+
+      console.error(`\n❌ HF Error on attempt ${attempt}:`);
+      console.error('   Status:', status);
+      console.error('   Data:', JSON.stringify(errData));
+      console.error('   Message:', error.message);
+
+      // 401 — Bad/missing token, no point retrying
+      if (status === 401) {
+        throw new Error('HuggingFace authentication failed. Check your HF_TOKEN.');
+      }
+
+      // 403 — Model access denied
+      if (status === 403) {
+        throw new Error('Access denied to this HuggingFace model.');
+      }
 
       // Model is loading — wait and retry
-      if (errData?.error?.includes('loading')) {
-        const waitTime = (errData.estimated_time || 20) * 1000;
-        console.log(`Model loading, waiting ${waitTime}ms...`);
+      if (
+        errData?.error?.toLowerCase().includes('loading') ||
+        status === 503
+      ) {
+        const waitTime = (errData?.estimated_time || 20) * 1000;
+        console.log(`⏳ Model loading, waiting ${waitTime / 1000}s...`);
         await new Promise(resolve => setTimeout(resolve, waitTime));
         continue;
       }
 
       // Rate limit — wait 5s and retry
-      if (error.response?.status === 429) {
-        console.log('Rate limited, waiting 5s...');
+      if (status === 429) {
+        console.log('⏳ Rate limited, waiting 5s...');
         await new Promise(resolve => setTimeout(resolve, 5000));
+        continue;
+      }
+
+      // Timeout or network error — retry
+      if (error.code === 'ECONNABORTED' || error.code === 'ENOTFOUND') {
+        console.log('⏳ Network error, waiting 3s before retry...');
+        await new Promise(resolve => setTimeout(resolve, 3000));
         continue;
       }
 
@@ -66,8 +110,59 @@ const callHuggingFace = async (inputs, retries = 3) => {
     }
   }
 
-  // All retries exhausted
+  console.log('⚠️ All retries exhausted, returning null');
   return null;
+};
+
+/* ─────────────────────────────────────────────────────────────
+   DEBUG ROUTE — GET /ai/debug
+   Hit this in Postman first to confirm env + HF connectivity
+   ───────────────────────────────────────────────────────────── */
+
+const debugAI = async (req, res) => {
+  const token = process.env.HF_TOKEN;
+
+  if (!token) {
+    return res.status(500).json({
+      success: false,
+      issue: 'HF_TOKEN is not set in environment variables',
+      fix: 'Add HF_TOKEN=hf_xxxx to your .env file and restart the server',
+    });
+  }
+
+  try {
+    const testResponse = await axios.post(
+      HF_API_URL,
+      {
+        inputs: 'Say hello',
+        options: { wait_for_model: true },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        timeout: 30000,
+      },
+    );
+
+    return res.json({
+      success: true,
+      token_length: token.length,
+      token_prefix: token.substring(0, 10) + '...',
+      hf_response: testResponse.data,
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      token_length: token.length,
+      token_prefix: token.substring(0, 10) + '...',
+      hf_status: error.response?.status,
+      hf_error: error.response?.data,
+      message: error.message,
+    });
+  }
 };
 
 /* ─────────────────────────────────────────────────────────────
@@ -78,6 +173,8 @@ const generateCaption = async (req, res) => {
   try {
     const { prompt } = req.body;
 
+    console.log('\n📝 Caption request received, prompt:', prompt);
+
     if (!prompt || !prompt.trim()) {
       return res.status(400).json({
         success: false,
@@ -85,14 +182,15 @@ const generateCaption = async (req, res) => {
       });
     }
 
-    const inputs = `Write an engaging and creative social media caption for: ${prompt}. Make it catchy and include emojis.`;
+    const inputs = `Write an engaging social media caption for: ${prompt}`;
 
     const generated = await callHuggingFace(inputs);
 
-    // Fallback if all retries return empty
     const caption =
       generated ||
       `✨ ${prompt} — crafted with creativity and passion. Double tap if you love it! 💫`;
+
+    console.log('✅ Final caption:', caption);
 
     return res.json({
       success: true,
@@ -100,11 +198,11 @@ const generateCaption = async (req, res) => {
     });
 
   } catch (error) {
-    console.log('Caption Error:', error.response?.data || error.message);
+    console.error('\n❌ generateCaption crashed:', error.message);
 
     return res.status(500).json({
       success: false,
-      message: 'Caption generation failed. Please try again.',
+      message: error.message || 'Caption generation failed. Please try again.',
     });
   }
 };
@@ -117,6 +215,8 @@ const generateHashtags = async (req, res) => {
   try {
     const { prompt } = req.body;
 
+    console.log('\n#️⃣ Hashtag request received, prompt:', prompt);
+
     if (!prompt || !prompt.trim()) {
       return res.status(400).json({
         success: false,
@@ -124,27 +224,25 @@ const generateHashtags = async (req, res) => {
       });
     }
 
-    // Instruct the model to output space-separated hashtags
-    const inputs = `List 10 popular Instagram hashtags for "${prompt}". Each hashtag must start with #. Output only the hashtags separated by spaces.`;
+    const inputs = `List 10 Instagram hashtags for: ${prompt}`;
 
     const generated = await callHuggingFace(inputs);
 
     let hashtags = [];
 
     if (generated) {
-      // Extract any word starting with # from the response
       hashtags = generated
         .split(/\s+/)
         .map(tag => {
-          // Clean up and normalize — add # if missing
           const clean = tag.replace(/[^a-zA-Z0-9#]/g, '');
           return clean.startsWith('#') ? clean : `#${clean}`;
         })
-        .filter(tag => tag.length > 1); // Remove lone '#'
+        .filter(tag => tag.length > 1);
     }
 
-    // Fallback: generate keyword-based hashtags from the prompt itself
     if (hashtags.length < 3) {
+      console.log('⚠️ Using keyword fallback for hashtags');
+
       const keywords = prompt
         .toLowerCase()
         .replace(/[^a-z0-9 ]/g, '')
@@ -164,9 +262,10 @@ const generateHashtags = async (req, res) => {
         '#Instagram',
       ];
 
-      // Deduplicate
       hashtags = [...new Set(hashtags)].slice(0, 10);
     }
+
+    console.log('✅ Final hashtags:', hashtags);
 
     return res.json({
       success: true,
@@ -174,13 +273,13 @@ const generateHashtags = async (req, res) => {
     });
 
   } catch (error) {
-    console.log('Hashtag Error:', error.response?.data || error.message);
+    console.error('\n❌ generateHashtags crashed:', error.message);
 
     return res.status(500).json({
       success: false,
-      message: 'Hashtag generation failed. Please try again.',
+      message: error.message || 'Hashtag generation failed. Please try again.',
     });
   }
 };
 
-export { generateCaption, generateHashtags };
+export { generateCaption, generateHashtags, debugAI };
