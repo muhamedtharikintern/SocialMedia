@@ -13,4 +13,5 @@ const upload = multer({
 
 router.post( '/posts', upload.single('file'),authMiddleware,uploadImage);
 
+
 export default router;
