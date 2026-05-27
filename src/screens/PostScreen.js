@@ -52,7 +52,22 @@ const safeParseJSON = async response => {
 };
 
 const PostScreen = ({navigation, route}) => {
-  const {selectedImage} = route?.params;
+
+  // ── Receive params from AIResultScreen or CreatePostScreen ───
+  const {
+    selectedImage = null,   // from CreatePostScreen (local uri)
+    aiImage       = null,   // from AIResultScreen (local uri or S3 url)
+    caption       = '',     // from AIResultScreen
+    hashtags      = [],     // from AIResultScreen (array)
+  } = route?.params ?? {};
+
+  // Use aiImage if selectedImage not present
+  const imageToShow = selectedImage ?? aiImage;
+
+  // Parse hashtags array into display string e.g. "#AIArt  #CreateAI"
+  const hashtagDisplay = Array.isArray(hashtags)
+    ? hashtags.map(h => (h.startsWith('#') ? h : `#${h}`)).join('   ')
+    : hashtags;
 
   const [shareToApps,     setShareToApps]     = useState(true);
   const [selectedPrivacy, setSelectedPrivacy] = useState('followers');
@@ -62,10 +77,8 @@ const PostScreen = ({navigation, route}) => {
       UPLOAD POST
   ========================= */
 
-
-
   const uploadPost = async () => {
-    if (!selectedImage) {
+    if (!imageToShow) {
       Alert.alert('No image selected');
       return;
     }
@@ -80,19 +93,25 @@ const PostScreen = ({navigation, route}) => {
         return;
       }
 
+      let finalImageUri = imageToShow;
+
+      // Only resize if it's a local file uri (not an https S3 url)
+      if (!imageToShow.startsWith('http')) {
         const resized = await ImageResizer.createResizedImage(
-          selectedImage,
-          1080,      // max width
-          1080,      // max height
+          imageToShow,
+          1080,
+          1080,
           'JPEG',
-          80,        // quality (0-100)
-          0,         // rotation
+          80,
+          0,
         );
+        finalImageUri = resized.uri;
+      }
 
       // ── STEP 1: Upload image to S3 ───────────────
       const formData = new FormData();
       formData.append('file', {
-        uri:  resized.uri,
+        uri:  finalImageUri,
         name: `post_${Date.now()}.jpg`,
         type: 'image/jpeg',
       });
@@ -100,14 +119,11 @@ const PostScreen = ({navigation, route}) => {
       const uploadRes = await fetch(`${BASE_URL}/upload/posts`, {
         method:  'POST',
         headers: {
-          // ✅ Do NOT set Content-Type manually for FormData.
-          // React Native sets it automatically with the correct boundary.
           'Authorization': `Bearer ${token}`,
         },
         body: formData,
       });
 
-      // ✅ Safe JSON parse — shows raw response if server returns HTML
       const uploadData = await safeParseJSON(uploadRes);
 
       if (!uploadRes.ok || !uploadData.success) {
@@ -124,15 +140,18 @@ const PostScreen = ({navigation, route}) => {
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
-          caption:    'Bathing in sunlight and blooming like a sunflower.',
-          hashtags:   JSON.stringify(['AIArt', 'Digitalcreativity', 'CreateAI']),
+          caption:    caption,
+          hashtags:   JSON.stringify(
+            Array.isArray(hashtags)
+              ? hashtags.map(h => h.replace('#', ''))
+              : [],
+          ),
           visibility: selectedPrivacy,
           url:        uploadData.url,
-          type:       uploadData.type,
+          type:       uploadData.type ?? 'image',
         }),
       });
 
-      // ✅ Safe JSON parse for post creation response too
       const postData = await safeParseJSON(postRes);
 
       if (!postRes.ok || !postData.success) {
@@ -186,17 +205,15 @@ const PostScreen = ({navigation, route}) => {
     );
   };
 
-  const renderActionRow = (icon, title) => {
-    return (
-      <TouchableOpacity activeOpacity={0.8} style={styles.actionRow}>
-        <View style={styles.actionLeft}>
-          <Image source={icon} style={styles.actionIcon} />
-          <Text style={styles.actionTitle}>{title}</Text>
-        </View>
-        <Image source={arrowRightIcon} style={styles.arrowIcon} />
-      </TouchableOpacity>
-    );
-  };
+  const renderActionRow = (icon, title) => (
+    <TouchableOpacity activeOpacity={0.8} style={styles.actionRow}>
+      <View style={styles.actionLeft}>
+        <Image source={icon} style={styles.actionIcon} />
+        <Text style={styles.actionTitle}>{title}</Text>
+      </View>
+      <Image source={arrowRightIcon} style={styles.arrowIcon} />
+    </TouchableOpacity>
+  );
 
   /* =========================
       RENDER
@@ -222,32 +239,30 @@ const PostScreen = ({navigation, route}) => {
             style={styles.backButton}>
             <Image source={backIcon} style={styles.backIcon} />
           </TouchableOpacity>
-
           <Text style={styles.headerTitle}>Post</Text>
-
           <View style={styles.headerSpacer} />
         </View>
 
         {/* PREVIEW IMAGE */}
-        <Image
-          source={{uri: selectedImage}}
-          style={styles.previewImage}
-          resizeMode="cover"
-        />
+        {imageToShow ? (
+          <Image
+            source={{uri: imageToShow}}
+            style={styles.previewImage}
+            resizeMode="cover"
+          />
+        ) : null}
 
         {/* CAPTION SECTION */}
         <Text style={styles.sectionTitle}>Captions & Hashtags</Text>
 
         <View style={styles.captionCard}>
-          <Text style={styles.captionText}>
-            "Bathing in sunlight and blooming like a sunflower."
-          </Text>
-          <Text style={styles.hashTags}>
-            #AIArt   #Digitalcreativity   #CreateAI
-          </Text>
-          <Text style={styles.hashTags}>
-            #Cinematicvibes   #Futuredesign
-          </Text>
+          {caption ? (
+            <Text style={styles.captionText}>"{caption}"</Text>
+          ) : null}
+
+          {hashtagDisplay ? (
+            <Text style={styles.hashTags}>{hashtagDisplay}</Text>
+          ) : null}
         </View>
 
         {/* ACTION CARD */}
@@ -307,243 +322,213 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
-
   scrollContent: {
     paddingBottom: 60,
   },
-
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection:     'row',
+    alignItems:        'center',
+    justifyContent:    'space-between',
     paddingHorizontal: 24,
-    paddingTop: Platform.OS === 'ios' ? 24 : 20,
-    marginBottom: 28,
+    paddingTop:        Platform.OS === 'ios' ? 24 : 20,
+    marginBottom:      28,
   },
-
   backButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width:           48,
+    height:          48,
+    borderRadius:    24,
     backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    shadowOffset: {width: 0, height: 4},
-    elevation: 5,
+    alignItems:      'center',
+    justifyContent:  'center',
+    shadowColor:     '#000',
+    shadowOpacity:   0.08,
+    shadowRadius:    12,
+    shadowOffset:    {width: 0, height: 4},
+    elevation:       5,
   },
-
   backIcon: {
-    width: 22,
-    height: 22,
+    width:      22,
+    height:     22,
     resizeMode: 'contain',
   },
-
   headerTitle: {
-    fontSize: 22,
+    fontSize:   22,
     fontWeight: '700',
-    color: '#111111',
+    color:      '#111111',
   },
-
   headerSpacer: {
     width: 48,
   },
-
   previewImage: {
-    width: width - 48,
-    height: width * 0.58,
+    width:        width - 48,
+    height:       width * 0.58,
     borderRadius: 28,
-    alignSelf: 'center',
+    alignSelf:    'center',
     marginBottom: 32,
   },
-
   sectionTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#111111',
+    fontSize:         22,
+    fontWeight:       '700',
+    color:            '#111111',
     marginHorizontal: 40,
-    marginBottom: 20,
+    marginBottom:     20,
   },
-
   captionCard: {
-    width: width - 48,
-    alignSelf: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 28,
-    borderWidth: 2,
-    borderColor: '#D86BFF',
-    paddingVertical: 36,
+    width:             width - 48,
+    alignSelf:         'center',
+    backgroundColor:   '#FFFFFF',
+    borderRadius:      28,
+    borderWidth:       2,
+    borderColor:       '#D86BFF',
+    paddingVertical:   36,
     paddingHorizontal: 28,
-    marginBottom: 28,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    shadowOffset: {width: 0, height: 4},
-    elevation: 5,
+    marginBottom:      28,
+    shadowColor:       '#000',
+    shadowOpacity:     0.08,
+    shadowRadius:      12,
+    shadowOffset:      {width: 0, height: 4},
+    elevation:         5,
   },
-
   captionText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#111111',
-    textAlign: 'center',
-    lineHeight: 34,
+    fontSize:     18,
+    fontWeight:   '600',
+    color:        '#111111',
+    textAlign:    'center',
+    lineHeight:   34,
     marginBottom: 28,
   },
-
   hashTags: {
-    fontSize: 16,
+    fontSize:   16,
     fontWeight: '700',
-    color: '#111111',
-    textAlign: 'center',
+    color:      '#111111',
+    textAlign:  'center',
     lineHeight: 34,
   },
-
   actionCard: {
-    width: width - 48,
-    alignSelf: 'center',
+    width:           width - 48,
+    alignSelf:       'center',
     backgroundColor: '#FFFFFF',
-    borderRadius: 28,
-    borderWidth: 2,
-    borderColor: '#D86BFF',
+    borderRadius:    28,
+    borderWidth:     2,
+    borderColor:     '#D86BFF',
     paddingVertical: 12,
-    marginBottom: 36,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    shadowOffset: {width: 0, height: 4},
-    elevation: 5,
+    marginBottom:    36,
+    shadowColor:     '#000',
+    shadowOpacity:   0.08,
+    shadowRadius:    12,
+    shadowOffset:    {width: 0, height: 4},
+    elevation:       5,
   },
-
   actionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection:     'row',
+    alignItems:        'center',
+    justifyContent:    'space-between',
     paddingHorizontal: 28,
-    paddingVertical: 22,
+    paddingVertical:   22,
   },
-
   actionLeft: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems:    'center',
   },
-
   actionIcon: {
-    width: 40,
-    height: 40,
+    width:      40,
+    height:     40,
     resizeMode: 'contain',
-    marginRight: 20,
+    marginRight:20,
   },
-
   actionTitle: {
-    fontSize: 18,
+    fontSize:   18,
     fontWeight: '700',
-    color: '#111111',
+    color:      '#111111',
   },
-
   arrowIcon: {
-    width: 20,
-    height: 20,
+    width:      20,
+    height:     20,
     resizeMode: 'contain',
   },
-
   privacyContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection:  'row',
+    alignItems:     'center',
     justifyContent: 'space-between',
-    marginHorizontal: 24,
-    marginBottom: 40,
+    marginHorizontal:24,
+    marginBottom:    40,
   },
-
   privacyButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 52,
-    borderRadius: 16,
-    borderWidth: 1.5,
-    borderColor: '#D86BFF',
+    flex:            1,
+    flexDirection:   'row',
+    alignItems:      'center',
+    justifyContent:  'center',
+    height:          52,
+    borderRadius:    16,
+    borderWidth:     1.5,
+    borderColor:     '#D86BFF',
     backgroundColor: '#FFFFFF',
-    paddingHorizontal: 10,
+    paddingHorizontal:10,
     marginHorizontal: 6,
-    overflow: 'hidden',
+    overflow:        'hidden',
   },
-
   activePrivacyButton: {
     backgroundColor: '#A100C8',
-    borderColor: '#A100C8',
+    borderColor:     '#A100C8',
   },
-
   privacyIcon: {
-    width: 18,
-    height: 18,
+    width:      18,
+    height:     18,
     resizeMode: 'contain',
-    tintColor: '#D86BFF',
+    tintColor:  '#D86BFF',
     marginRight: 6,
   },
-
   activePrivacyIcon: {
     tintColor: '#FFFFFF',
   },
-
   privacyText: {
-    fontSize: width < 380 ? 12 : 14,
-    fontWeight: '700',
-    color: '#D86BFF',
-    includeFontPadding: false,
+    fontSize:          width < 380 ? 12 : 14,
+    fontWeight:        '700',
+    color:             '#D86BFF',
+    includeFontPadding:false,
   },
-
   activePrivacyText: {
     color: '#FFFFFF',
   },
-
   shareRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginHorizontal: 40,
-    marginBottom: 44,
+    flexDirection:   'row',
+    alignItems:      'center',
+    justifyContent:  'space-between',
+    marginHorizontal:40,
+    marginBottom:    44,
   },
-
   shareLeft: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems:    'center',
   },
-
   shareIcon: {
-    width: 26,
-    height: 26,
+    width:      26,
+    height:     26,
     resizeMode: 'contain',
-    marginRight: 20,
+    marginRight:20,
   },
-
   shareText: {
-    fontSize: 18,
+    fontSize:   18,
     fontWeight: '700',
-    color: '#111111',
+    color:      '#111111',
   },
-
   postButton: {
-    width: width - 48,
-    height: 68,
-    borderRadius: 999,
+    width:           width - 48,
+    height:          68,
+    borderRadius:    999,
     backgroundColor: '#A100C8',
-    alignSelf: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.12,
-    shadowRadius: 12,
-    shadowOffset: {width: 0, height: 4},
-    elevation: 5,
+    alignSelf:       'center',
+    alignItems:      'center',
+    justifyContent:  'center',
+    shadowColor:     '#000',
+    shadowOpacity:   0.12,
+    shadowRadius:    12,
+    shadowOffset:    {width: 0, height: 4},
+    elevation:       5,
   },
-
   postButtonText: {
-    fontSize: 20,
+    fontSize:   20,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color:      '#FFFFFF',
   },
 });
