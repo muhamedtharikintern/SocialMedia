@@ -299,7 +299,7 @@ const generateCaptionFromImage = async (req, res) => {
       file.buffer,  // send raw image buffer
       {
         headers: {
-          Authorization:  `Bearer ${token}`,
+          Authorization:  `Bearer ${process.env.HF_TOKEN}`,
           'Content-Type': file.mimetype,
         },
         timeout: 60000,
