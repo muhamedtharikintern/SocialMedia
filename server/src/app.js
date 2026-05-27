@@ -6,6 +6,7 @@ import authRouter from "./routes/auth.js";
 import uploadRouter from "./routes/uploadRoutes.js";
 import postRouter from "./routes/postRoutes.js";
 import aiRouter from "./routes/aiRoutes.js";
+import userRouter from "./routes/userRoutes.js";
 
 
 const app = express();
@@ -20,6 +21,7 @@ app.use('/auth', authRouter);
 app.use("/upload",uploadRouter);
 app.use('/posts', postRouter);
 app.use('/ai', aiRouter);
+app.use('/user', userRouter);
 
 export default app;
 
