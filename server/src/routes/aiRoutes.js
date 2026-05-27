@@ -1,11 +1,6 @@
-const express = require('express');
-
-const router = express.Router();
-
-const {
-  generateCaption,
-  generateHashtags,
-} = require('../controllers/aiController');
+import express from 'express';
+import {generateCaption,generateHashtags,} from'../controller/aiController.js';
+const router = Router();
 
 router.post(
   '/caption',
@@ -17,4 +12,4 @@ router.post(
   generateHashtags,
 );
 
-module.exports = router;
+export default router;

@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios from 'axios';
 
 const generateCaption = async (
   req,
@@ -98,7 +98,4 @@ const generateHashtags = async (
   }
 };
 
-module.exports = {
-  generateCaption,
-  generateHashtags,
-};
+export {generateCaption,generateHashtags};
