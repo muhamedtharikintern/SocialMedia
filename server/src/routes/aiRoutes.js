@@ -1,6 +1,6 @@
 import express from 'express';
 import {generateCaption,generateHashtags,} from'../controller/aiController.js';
-const router = Router();
+const router =express.Router();
 
 router.post(
   '/caption',
