@@ -1,5 +1,9 @@
 import axios from 'axios';
 
+/* =====================================
+   GENERATE CAPTION
+===================================== */
+
 const generateCaption = async (
   req,
   res,
@@ -7,9 +11,7 @@ const generateCaption = async (
 
   try {
 
-    const {
-      prompt,
-    } = req.body;
+    const {prompt} = req.body;
 
     const response =
       await axios.post(
@@ -29,8 +31,41 @@ const generateCaption = async (
       },
     );
 
-    const generated =
-      response.data[0]?.generated_text;
+    console.log(
+      'Caption API Response:',
+      response.data,
+    );
+
+    /*
+      HANDLE BOTH RESPONSE TYPES
+    */
+
+    let generated = '';
+
+    if (
+      Array.isArray(response.data)
+    ) {
+
+      generated =
+        response.data[0]
+          ?.generated_text || '';
+
+    } else {
+
+      generated =
+        response.data
+          ?.generated_text || '';
+    }
+
+    /*
+      FALLBACK
+    */
+
+    if (!generated) {
+
+      generated =
+        'AI generated creative caption';
+    }
 
     res.json({
       success: true,
@@ -39,7 +74,11 @@ const generateCaption = async (
 
   } catch (error) {
 
-    console.log(error.response?.data);
+    console.log(
+      'Caption Error:',
+      error.response?.data ||
+      error.message,
+    );
 
     res.status(500).json({
       success: false,
@@ -49,7 +88,9 @@ const generateCaption = async (
   }
 };
 
-
+/* =====================================
+   GENERATE HASHTAGS
+===================================== */
 
 const generateHashtags = async (
   req,
@@ -58,9 +99,7 @@ const generateHashtags = async (
 
   try {
 
-    const {
-      prompt,
-    } = req.body;
+    const {prompt} = req.body;
 
     const response =
       await axios.post(
@@ -80,15 +119,68 @@ const generateHashtags = async (
       },
     );
 
-    const generated =
-      response.data[0]?.generated_text;
+    console.log(
+      'Hashtag API Response:',
+      response.data,
+    );
+
+    /*
+      HANDLE BOTH RESPONSE TYPES
+    */
+
+    let generated = '';
+
+    if (
+      Array.isArray(response.data)
+    ) {
+
+      generated =
+        response.data[0]
+          ?.generated_text || '';
+
+    } else {
+
+      generated =
+        response.data
+          ?.generated_text || '';
+    }
+
+    /*
+      CONVERT TO ARRAY
+    */
+
+    const hashtags =
+      generated
+        .split(' ')
+        .filter(tag =>
+          tag.startsWith('#'),
+        );
+
+    /*
+      FALLBACK TAGS
+    */
+
+    const finalHashtags =
+      hashtags.length > 0
+        ? hashtags
+        : [
+            '#AIArt',
+            '#CreateAI',
+            '#Vibeo',
+          ];
 
     res.json({
       success: true,
-      hashtags: generated,
+      hashtags: finalHashtags,
     });
 
   } catch (error) {
+
+    console.log(
+      'Hashtag Error:',
+      error.response?.data ||
+      error.message,
+    );
 
     res.status(500).json({
       success: false,
@@ -98,4 +190,7 @@ const generateHashtags = async (
   }
 };
 
-export {generateCaption,generateHashtags};
+export {
+  generateCaption,
+  generateHashtags,
+};
