@@ -13,6 +13,7 @@ import {
   Platform,
   Dimensions,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const {width} = Dimensions.get('window');
 
@@ -72,6 +73,14 @@ const SettingsScreen = ({navigation}) => {
       </TouchableOpacity>
     );
   };
+
+  
+
+const handleLogout = async () => {
+  await AsyncStorage.removeItem('token');
+  await AsyncStorage.removeItem('user');
+  navigation.replace('LoginScreen');
+};
 
   const renderToggleItem = (
     title,
@@ -394,6 +403,7 @@ const SettingsScreen = ({navigation}) => {
         </TouchableOpacity>
 
         <TouchableOpacity
+        onPress={handleLogout}
           activeOpacity={0.8}
           style={styles.bottomButton}>
 

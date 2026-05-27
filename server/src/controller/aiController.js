@@ -1,4 +1,6 @@
 import axios from 'axios';
+import multer from 'multer';
+const upload = multer({ storage: multer.memoryStorage() });
 
 const HF_API_URL =
   'https://api-inference.huggingface.co/models/google/flan-t5-large';
@@ -282,4 +284,33 @@ const generateHashtags = async (req, res) => {
   }
 };
 
-export { generateCaption, generateHashtags, debugAI };
+const generateCaptionFromImage = async (req, res) => {
+  try {
+    const token = process.env.HF_TOKEN;
+    const file  = req.file; // image buffer from multer
+
+    if (!file) {
+      return res.status(400).json({ success: false, message: 'No image uploaded' });
+    }
+
+    const response = await axios.post(
+      'https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-large',
+      file.buffer,  // send raw image buffer
+      {
+        headers: {
+          Authorization:  `Bearer ${token}`,
+          'Content-Type': file.mimetype,
+        },
+        timeout: 60000,
+      },
+    );
+
+    const caption = response.data?.[0]?.generated_text ?? '';
+
+    return res.json({ success: true, caption });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export { generateCaption, generateHashtags, debugAI,generateCaptionFromImage };

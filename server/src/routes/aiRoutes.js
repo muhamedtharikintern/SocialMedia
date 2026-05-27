@@ -3,6 +3,7 @@ import {
   generateCaption,
   generateHashtags,
   debugAI,
+  generateCaptionFromImage,
 } from '../controller/aiController.js';
 
 const router = express.Router();
@@ -13,5 +14,6 @@ router.get('/debug', debugAI);
 // ── Production routes ────────────────────────────────
 router.post('/caption', generateCaption);
 router.post('/hashtags', generateHashtags);
+router.post('/caption-from-image',upload.single('image'), generateCaptionFromImage);
 
 export default router;

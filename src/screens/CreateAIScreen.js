@@ -14,9 +14,10 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import LinearGradient from 'react-native-linear-gradient';
+import LinearGradient  from 'react-native-linear-gradient';
 import { launchImageLibrary } from 'react-native-image-picker';
-import Voice from '@react-native-voice/voice';
+import ImageResizer     from 'react-native-image-resizer';
+import Voice            from '@react-native-voice/voice';
 
 const { width, height } = Dimensions.get('window');
 export const BASE_URL = 'https://deffovibeo.duckdns.org';
@@ -61,13 +62,13 @@ const creationTypes = [
 ];
 
 const CreateAIScreen = ({ navigation }) => {
-  const [selectedType, setSelectedType] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [prompt, setPrompt] = useState('');
+  const [selectedType,  setSelectedType]  = useState(1);
+  const [loading,       setLoading]       = useState(false);
+  const [prompt,        setPrompt]        = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
-  const [isListening, setIsListening] = useState(false);
+  const [isListening,   setIsListening]   = useState(false);
 
-  // ─── Voice setup ────────────────────────────────────────────────────────────
+  // ─── Voice setup ─────────────────────────────────────────────
   useEffect(() => {
     Voice.onSpeechResults = event => {
       if (event.value && event.value.length > 0) {
@@ -75,96 +76,90 @@ const CreateAIScreen = ({ navigation }) => {
         setIsListening(false);
       }
     };
-
-    Voice.onSpeechError = () => {
-      setIsListening(false);
-    };
-
-    return () => {
-      Voice.destroy().then(Voice.removeAllListeners);
-    };
+    Voice.onSpeechError = () => setIsListening(false);
+    return () => { Voice.destroy().then(Voice.removeAllListeners); };
   }, []);
 
-  // ─── Render type card ────────────────────────────────────────────────────────
+  // ─── Render type card ─────────────────────────────────────────
   const renderCard = item => {
     const active = selectedType === item.id;
-
     return (
       <TouchableOpacity
         key={item.id}
         activeOpacity={0.9}
         style={[styles.card, active && styles.activeCard]}
         onPress={() => setSelectedType(item.id)}>
-        <View
-          style={[
-            styles.iconContainer,
-            { backgroundColor: item.backgroundColor },
-          ]}>
-          <Image
-            source={item.icon}
-            style={{ width: 30, height: 30, resizeMode: 'contain' }}
-          />
+        <View style={[styles.iconContainer, { backgroundColor: item.backgroundColor }]}>
+          <Image source={item.icon} style={{ width: 30, height: 30, resizeMode: 'contain' }} />
         </View>
-
         <Text style={styles.cardTitle}>{item.title}</Text>
         <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
       </TouchableOpacity>
     );
   };
 
-  // ─── Image picker ─────────────────────────────────────────────────────────────
-  const pickImage = async () => {
-    launchImageLibrary({ mediaType: 'photo', quality: 1 }, response => {
+  // ─── Image picker ─────────────────────────────────────────────
+  const pickImage = () => {
+    launchImageLibrary({ mediaType: 'photo', quality: 1 }, async response => {
       if (response.didCancel) return;
-      if (response.assets) {
-        setSelectedImage(response.assets[0]);
+      const asset = response.assets?.[0];
+      if (!asset?.uri) return;
+
+      try {
+        const resized = await ImageResizer.createResizedImage(
+          asset.uri,
+          1080,         // max width
+          1080,         // max height
+          'JPEG',
+          80,           // quality
+          0,            // rotation
+        );
+        setSelectedImage({ ...asset, uri: resized.uri });
+      } catch {
+        // fallback to original if resize fails
+        setSelectedImage(asset);
       }
     });
   };
 
-  // ─── Voice input ──────────────────────────────────────────────────────────────
+  // ─── Voice input ──────────────────────────────────────────────
   const startVoiceInput = async () => {
     try {
       setIsListening(true);
       await Voice.start('en-US');
     } catch (error) {
-      console.log('Voice error:', error);
       setIsListening(false);
       Alert.alert('Voice Error', 'Could not start voice input. Please try again.');
     }
   };
 
-  // ─── Magic staff: enhance prompt ─────────────────────────────────────────────
+  // ─── Enhance prompt ───────────────────────────────────────────
   const enhancePrompt = async () => {
     if (!prompt.trim()) {
       Alert.alert('Empty Prompt', 'Please type something first to enhance.');
       return;
     }
-
     try {
       setLoading(true);
       const response = await fetch(`${BASE_URL}/ai/enhance-prompt`, {
-        method: 'POST',
+        method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt }),
+        body:    JSON.stringify({ prompt }),
       });
-
       const data = await response.json();
-
       if (data?.enhancedPrompt) {
         setPrompt(data.enhancedPrompt);
       } else {
         Alert.alert('Error', 'Could not enhance prompt. Please try again.');
       }
     } catch (error) {
-      console.log('Enhance error:', error);
       Alert.alert('Error', 'Failed to enhance prompt.');
     } finally {
       setLoading(false);
     }
   };
 
-  // ─── Main generate handler ────────────────────────────────────────────────────
+  // ─── Main generate handler ────────────────────────────────────
   const handleGenerate = async () => {
     if (!prompt.trim() && !selectedImage) {
       Alert.alert('Missing Input', 'Please enter a prompt or add an image.');
@@ -176,47 +171,73 @@ const CreateAIScreen = ({ navigation }) => {
     try {
       const selectedTypeData = creationTypes.find(t => t.id === selectedType);
 
-      // ── Caption & Hashtag types ──────────────────────────────────────────────
+      // ── CAPTION type ─────────────────────────────────────────
       if (selectedType === 3) {
-        const [captionResponse, hashtagResponse] = await Promise.all([
-          fetch(`${BASE_URL}/ai/caption`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt }),
-          }),
-          fetch(`${BASE_URL}/ai/hashtags`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt }),
-          }),
-        ]);
 
-        const captionData = await captionResponse.json();
-        const hashtagData = await hashtagResponse.json();
+        let captionData;
+
+        if (selectedImage) {
+          // ── Image uploaded → use image captioning endpoint ──
+          const formData = new FormData();
+          formData.append('image', {
+            uri:  selectedImage.uri,
+            name: `caption_${Date.now()}.jpg`,
+            type: selectedImage.type ?? 'image/jpeg',
+          });
+          // also send prompt as extra context if provided
+          if (prompt.trim()) formData.append('prompt', prompt);
+
+          const captionRes = await fetch(`${BASE_URL}/ai/caption-from-image`, {
+            method:  'POST',
+            headers: {
+              // No Content-Type — let RN set multipart boundary
+            },
+            body: formData,
+          });
+          captionData = await captionRes.json();
+        } else {
+          // ── No image → use text prompt endpoint ──────────────
+          const captionRes = await fetch(`${BASE_URL}/ai/caption`, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ prompt }),
+          });
+          captionData = await captionRes.json();
+        }
 
         if (!captionData?.caption) {
           throw new Error('Invalid caption response from server.');
         }
+
+        // Hashtags always use text prompt (or image description as fallback)
+        const hashtagRes = await fetch(`${BASE_URL}/ai/hashtags`, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({
+            prompt: prompt.trim() || captionData.caption,
+          }),
+        });
+        const hashtagData = await hashtagRes.json();
 
         if (!hashtagData?.hashtags) {
           throw new Error('Invalid hashtag response from server.');
         }
 
         navigation.navigate('AIResultScreen', {
-          type: 'Caption',
-          aiImage: selectedImage?.uri,
-          caption: captionData.caption,
+          type:     'Caption',
+          aiImage:  selectedImage?.uri,
+          caption:  captionData.caption,
           hashtags: hashtagData.hashtags,
         });
 
         return;
       }
 
-      // ── Image / Video / Advertisement types ─────────────────────────────────
+      // ── Image / Video / Advertisement types ──────────────────
       const response = await fetch(`${BASE_URL}${selectedTypeData.apiEndpoint}`, {
-        method: 'POST',
+        method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+        body:    JSON.stringify({
           prompt,
           ...(selectedImage && { imageUri: selectedImage.uri }),
         }),
@@ -224,25 +245,22 @@ const CreateAIScreen = ({ navigation }) => {
 
       const data = await response.json();
 
-      if (!data) {
-        throw new Error('Empty response from server.');
-      }
+      if (!data) throw new Error('Empty response from server.');
 
       navigation.navigate('AIResultScreen', {
-        type: selectedTypeData.title,
+        type:    selectedTypeData.title,
         aiImage: selectedImage?.uri,
-        result: data,
+        result:  data,
       });
 
     } catch (error) {
-      console.log('Generate error:', error);
       Alert.alert('Generation Failed', error.message || 'AI generation failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  // ─── UI ───────────────────────────────────────────────────────────────────────
+  // ─── UI ───────────────────────────────────────────────────────
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar backgroundColor="#C66CFF" barStyle="dark-content" />
@@ -266,10 +284,8 @@ const CreateAIScreen = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}>
 
-        {/* SELECTION TITLE */}
         <Text style={styles.sectionTitle}>Selection Type</Text>
 
-        {/* CARD GRID */}
         <View style={styles.gridContainer}>
           {creationTypes.map(renderCard)}
         </View>
@@ -289,10 +305,21 @@ const CreateAIScreen = ({ navigation }) => {
           </View>
         )}
 
+        {/* hint when Caption type is selected and image is attached */}
+        {selectedType === 3 && selectedImage && (
+          <Text style={styles.hintText}>
+            📷 Caption will be generated from your image
+          </Text>
+        )}
+
         {/* PROMPT BOX */}
         <View style={styles.promptContainer}>
           <TextInput
-            placeholder="Describe what you want to create..."
+            placeholder={
+              selectedType === 3 && selectedImage
+                ? 'Optional: add extra context for the caption...'
+                : 'Describe what you want to create...'
+            }
             placeholderTextColor="#111"
             multiline
             value={prompt}
@@ -303,7 +330,6 @@ const CreateAIScreen = ({ navigation }) => {
           />
 
           <View style={styles.promptActions}>
-            {/* Image picker */}
             <TouchableOpacity
               style={styles.actionButton}
               onPress={pickImage}
@@ -315,7 +341,6 @@ const CreateAIScreen = ({ navigation }) => {
             </TouchableOpacity>
 
             <View style={styles.rightActions}>
-              {/* Magic staff: enhance prompt */}
               <TouchableOpacity
                 style={styles.actionButton}
                 onPress={enhancePrompt}
@@ -326,12 +351,8 @@ const CreateAIScreen = ({ navigation }) => {
                 />
               </TouchableOpacity>
 
-              {/* Voice input */}
               <TouchableOpacity
-                style={[
-                  styles.actionButton,
-                  isListening && styles.actionButtonActive,
-                ]}
+                style={[styles.actionButton, isListening && styles.actionButtonActive]}
                 onPress={startVoiceInput}
                 disabled={loading || isListening}>
                 <Image
@@ -348,18 +369,12 @@ const CreateAIScreen = ({ navigation }) => {
         </View>
 
         {/* GENERATE BUTTON */}
-        <TouchableOpacity
-          onPress={handleGenerate}
-          activeOpacity={0.9}
-          disabled={loading}>
+        <TouchableOpacity onPress={handleGenerate} activeOpacity={0.9} disabled={loading}>
           <LinearGradient
             colors={['#CC6ACB', '#F4A2F5', '#88078C']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
-            style={[
-              styles.generateButton,
-              loading && styles.generateButtonDisabled,
-            ]}>
+            style={[styles.generateButton, loading && styles.generateButtonDisabled]}>
             {loading ? (
               <ActivityIndicator size="small" color="#000" />
             ) : (
@@ -373,6 +388,7 @@ const CreateAIScreen = ({ navigation }) => {
             </Text>
           </LinearGradient>
         </TouchableOpacity>
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -381,11 +397,7 @@ const CreateAIScreen = ({ navigation }) => {
 export default CreateAIScreen;
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#F5F5F5',
-  },
-
+  safeArea: { flex: 1, backgroundColor: '#F5F5F5' },
   headerContainer: {
     width: '100%',
     height: height * 0.13,
@@ -396,38 +408,11 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     overflow: 'hidden',
   },
-
-  headerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-
-  headerTitle: {
-    fontSize: 18,
-    color: '#000',
-    fontWeight: '700',
-    marginLeft: 8,
-  },
-
-  scrollContent: {
-    paddingHorizontal: 14,
-    paddingTop: 14,
-    paddingBottom: 120,
-  },
-
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#111',
-    marginBottom: 14,
-  },
-
-  gridContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-
+  headerContent: { flexDirection: 'row', alignItems: 'center' },
+  headerTitle: { fontSize: 18, color: '#000', fontWeight: '700', marginLeft: 8 },
+  scrollContent: { paddingHorizontal: 14, paddingTop: 14, paddingBottom: 120 },
+  sectionTitle: { fontSize: 16, fontWeight: '700', color: '#111', marginBottom: 14 },
+  gridContainer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
   card: {
     width: (width - 42) / 2,
     backgroundColor: '#E9EEF4',
@@ -435,134 +420,48 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 14,
   },
-
-  activeCard: {
-    borderWidth: 2,
-    borderColor: '#A100C8',
-  },
-
+  activeCard: { borderWidth: 2, borderColor: '#A100C8' },
   iconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 14,
+    width: 56, height: 56, borderRadius: 18,
+    justifyContent: 'center', alignItems: 'center', marginBottom: 14,
   },
-
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#111',
-  },
-
-  cardSubtitle: {
-    fontSize: 12,
-    color: '#555',
-    marginTop: 4,
-  },
-
-  imagePreviewContainer: {
-    marginTop: 14,
-    borderRadius: 16,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-
-  imagePreview: {
-    width: '100%',
-    height: 180,
-    borderRadius: 16,
-    resizeMode: 'cover',
-  },
-
+  cardTitle: { fontSize: 18, fontWeight: '700', color: '#111' },
+  cardSubtitle: { fontSize: 12, color: '#555', marginTop: 4 },
+  imagePreviewContainer: { marginTop: 14, borderRadius: 16, overflow: 'hidden', position: 'relative' },
+  imagePreview: { width: '100%', height: 180, borderRadius: 16, resizeMode: 'cover' },
   removeImageButton: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
+    position: 'absolute', top: 8, right: 8,
     backgroundColor: 'rgba(0,0,0,0.6)',
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: 28, height: 28, borderRadius: 14,
+    justifyContent: 'center', alignItems: 'center',
   },
-
-  removeImageText: {
-    color: '#FFF',
-    fontSize: 14,
-    fontWeight: '700',
+  removeImageText: { color: '#FFF', fontSize: 14, fontWeight: '700' },
+  hintText: {
+    fontSize: 13, color: '#A100C8', fontWeight: '600',
+    marginTop: 10, marginLeft: 4,
   },
-
   promptContainer: {
-    backgroundColor: '#FFF',
-    borderRadius: 22,
-    minHeight: 180,
-    marginTop: 18,
-    padding: 18,
-    elevation: 3,
+    backgroundColor: '#FFF', borderRadius: 22,
+    minHeight: 180, marginTop: 18, padding: 18, elevation: 3,
   },
-
-  promptInput: {
-    fontSize: 16,
-    color: '#111',
-    minHeight: 100,
-  },
-
+  promptInput: { fontSize: 16, color: '#111', minHeight: 100 },
   promptActions: {
-    marginTop: 18,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    marginTop: 18, flexDirection: 'row',
+    justifyContent: 'space-between', alignItems: 'center',
   },
-
-  rightActions: {
-    flexDirection: 'row',
-  },
-
+  rightActions: { flexDirection: 'row' },
   actionButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#FFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 3,
-    marginLeft: 10,
+    width: 48, height: 48, borderRadius: 24,
+    backgroundColor: '#FFF', justifyContent: 'center',
+    alignItems: 'center', elevation: 3, marginLeft: 10,
   },
-
-  actionButtonActive: {
-    backgroundColor: '#F0DCFF',
-    borderWidth: 1.5,
-    borderColor: '#A100C8',
-  },
-
-  listeningText: {
-    marginTop: 10,
-    fontSize: 13,
-    color: '#A100C8',
-    fontWeight: '600',
-  },
-
+  actionButtonActive: { backgroundColor: '#F0DCFF', borderWidth: 1.5, borderColor: '#A100C8' },
+  listeningText: { marginTop: 10, fontSize: 13, color: '#A100C8', fontWeight: '600' },
   generateButton: {
-    width: '92%',
-    height: 56,
-    borderRadius: 16,
-    alignSelf: 'center',
-    marginTop: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'row',
+    width: '92%', height: 56, borderRadius: 16,
+    alignSelf: 'center', marginTop: 24,
+    justifyContent: 'center', alignItems: 'center', flexDirection: 'row',
   },
-
-  generateButtonDisabled: {
-    opacity: 0.7,
-  },
-
-  generateText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#000',
-    marginLeft: 8,
-  },
+  generateButtonDisabled: { opacity: 0.7 },
+  generateText: { fontSize: 16, fontWeight: '700', color: '#000', marginLeft: 8 },
 });
