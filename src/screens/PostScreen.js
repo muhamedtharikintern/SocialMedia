@@ -161,7 +161,7 @@ const PostScreen = ({navigation, route}) => {
       console.log('Post created:', postData.post._id);
 
       Alert.alert('Posted!', 'Your post is live.', [
-        {text: 'OK', onPress: () => navigation.navigate("HomeScreen")},
+        {text: 'OK', onPress: () => navigation.replace("HomeScreen")},
       ]);
 
     } catch (err) {
