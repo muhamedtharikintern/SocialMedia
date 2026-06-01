@@ -2,9 +2,10 @@ import axios from 'axios';
 import multer from 'multer';
 const upload = multer({ storage: multer.memoryStorage() });
 
-const HF_API_URL = "https://router.huggingface.co/hf-inference/models/google/flan-t5-large";
+const HF_API_URL = 'https://api-inference.huggingface.co/models/google/flan-t5-large';
 
-//'https://api-inference.huggingface.co/models/google/flan-t5-large'
+//'https://router.huggingface.co/hf-inference/models/google/flan-t5-large'
+
 
 /* ─────────────────────────────────────────────────────────────
    HELPER: Call HuggingFace with retry on model-loading state
@@ -295,7 +296,7 @@ const generateCaptionFromImage = async (req, res) => {
     }
 
     const response = await axios.post(
-      "https://router.huggingface.co/hf-inference/models/Salesforce/blip-image-captioning-base",
+      'https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-base',
       file.buffer,  // send raw image buffer
       {
         headers: {

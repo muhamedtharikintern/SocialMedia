@@ -518,8 +518,8 @@ const styles = StyleSheet.create({
   },
 
   profileImage: {
-    width: 96,
-    height: 96,
+    width: 70,
+    height: 70,
 
     borderRadius: 999,
   },
@@ -538,15 +538,15 @@ const styles = StyleSheet.create({
   },
 
   chatName: {
-    fontSize: 20,
+    fontSize: 15,
     fontWeight: '700',
 
     color: '#111111',
   },
 
   verifiedIcon: {
-    width: 22,
-    height: 22,
+    width: 17,
+    height: 17,
 
     resizeMode: 'contain',
 
@@ -554,8 +554,8 @@ const styles = StyleSheet.create({
   },
 
   chatMessage: {
-    fontSize: 15,
-    lineHeight: 28,
+    fontSize: 10,
+    lineHeight: 23,
     fontWeight: '500',
 
     color: '#111111',
