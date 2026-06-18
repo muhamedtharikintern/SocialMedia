@@ -221,7 +221,7 @@ export default function PostNowScreen({navigation}) {
             onValueChange={setShareToggle}
             trackColor={{
               false: '#9E9E9E',
-              true: '#A100C8',
+              true: '#FDBB67',
             }}
             thumbColor="#FFFFFF"
           />
@@ -234,10 +234,11 @@ export default function PostNowScreen({navigation}) {
           style={styles.postButtonWrapper}>
 
           <LinearGradient
-            colors={['#A100C8', '#8A00B8']}
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 0}}
-            style={styles.postButton}>
+  colors={['#FFFFFF', '#F0DDC0']}
+  locations={[0.1959, 0.815]}
+  start={{x: 1, y: 0}}
+  end={{x: 0, y: 1}}
+  style={{flex: 1}}>
 
             <Text style={styles.postButtonText}>
               Post Now
@@ -274,25 +275,24 @@ const styles = StyleSheet.create({
   },
 
   backButton: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+  width: 64,
+  height: 64,
+  borderRadius: 32,
 
-    backgroundColor: '#FFFFFF',
+  backgroundColor: '#F8F5EF',
 
-    justifyContent: 'center',
-    alignItems: 'center',
+  borderWidth: 1,
+  borderColor: '#E7E2D9',
 
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
+  justifyContent: 'center',
+  alignItems: 'center',
 
-    elevation: 5,
-  },
+  shadowColor: '#000',
+  shadowOpacity: 0.08,
+  shadowRadius: 12,
+  shadowOffset: {width: 0, height: 4},
+  elevation: 5,
+},
 
   headerTitle: {
     fontSize: 26,
@@ -325,30 +325,26 @@ const styles = StyleSheet.create({
   },
 
   captionCard: {
-    marginHorizontal: 20,
+  marginHorizontal: 20,
 
-    backgroundColor: '#FFFFFF',
+  backgroundColor: '#E8D8BC',
 
-    borderWidth: 2,
-    borderColor: '#D46BDF',
+  borderWidth: 1.5,
+  borderColor: '#FDBB67',
 
-    borderRadius: 28,
+  borderRadius: 28,
 
-    paddingHorizontal: 24,
-    paddingVertical: 36,
+  paddingHorizontal: 24,
+  paddingVertical: 36,
 
-    marginBottom: 34,
+  marginBottom: 34,
 
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-
-    elevation: 4,
-  },
+  shadowColor: '#000',
+  shadowOpacity: 0.08,
+  shadowRadius: 12,
+  shadowOffset: {width: 0, height: 4},
+  elevation: 5,
+},
 
   captionText: {
     fontSize: 18,
@@ -384,30 +380,20 @@ const styles = StyleSheet.create({
   },
 
   actionCard: {
-    marginHorizontal: 20,
+  marginHorizontal: 20,
 
-    backgroundColor: '#FFFFFF',
+  backgroundColor: '#E8D8BC',
 
-    borderWidth: 2,
-    borderColor: '#D46BDF',
+  borderWidth: 1.5,
+  borderColor: '#FDBB67',
 
-    borderRadius: 30,
+  borderRadius: 30,
 
-    paddingHorizontal: 24,
-    paddingVertical: 28,
+  paddingHorizontal: 24,
+  paddingVertical: 28,
 
-    marginBottom: 40,
-
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-
-    elevation: 4,
-  },
+  marginBottom: 40,
+},
 
   actionRow: {
     flexDirection: 'row',
@@ -453,7 +439,7 @@ const styles = StyleSheet.create({
     height: 58,
 
     borderWidth: 2,
-    borderColor: '#D46BDF',
+    borderColor: '#FDBB67',
 
     borderRadius: 18,
 
@@ -465,14 +451,14 @@ const styles = StyleSheet.create({
   },
 
   activePrivacyButton: {
-    backgroundColor: '#D46BDF',
+    backgroundColor: '#FDBB67',
   },
 
   privacyText: {
     fontSize: 16,
     fontWeight: '700',
 
-    color: '#D46BDF',
+    color: '#FDBB67',
 
     marginLeft: 8,
   },
