@@ -14,7 +14,6 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import LinearGradient  from 'react-native-linear-gradient';
 import { launchImageLibrary } from 'react-native-image-picker';
 import ImageResizer     from 'react-native-image-resizer';
 import Voice            from '@react-native-voice/voice';
@@ -108,15 +107,14 @@ const CreateAIScreen = ({ navigation }) => {
       try {
         const resized = await ImageResizer.createResizedImage(
           asset.uri,
-          1080,         // max width
-          1080,         // max height
+          1080,
+          1080,
           'JPEG',
-          80,           // quality
-          0,            // rotation
+          80,
+          0,
         );
         setSelectedImage({ ...asset, uri: resized.uri });
       } catch {
-        // fallback to original if resize fails
         setSelectedImage(asset);
       }
     });
@@ -177,26 +175,21 @@ const CreateAIScreen = ({ navigation }) => {
         let captionData;
 
         if (selectedImage) {
-          // ── Image uploaded → use image captioning endpoint ──
           const formData = new FormData();
           formData.append('image', {
             uri:  selectedImage.uri,
             name: `caption_${Date.now()}.jpg`,
             type: selectedImage.type ?? 'image/jpeg',
           });
-          // also send prompt as extra context if provided
           if (prompt.trim()) formData.append('prompt', prompt);
 
           const captionRes = await fetch(`${BASE_URL}/ai/caption-from-image`, {
             method:  'POST',
-            headers: {
-              // No Content-Type — let RN set multipart boundary
-            },
+            headers: {},
             body: formData,
           });
           captionData = await captionRes.json();
         } else {
-          // ── No image → use text prompt endpoint ──────────────
           const captionRes = await fetch(`${BASE_URL}/ai/caption`, {
             method:  'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -209,7 +202,6 @@ const CreateAIScreen = ({ navigation }) => {
           throw new Error('Invalid caption response from server.');
         }
 
-        // Hashtags always use text prompt (or image description as fallback)
         const hashtagRes = await fetch(`${BASE_URL}/ai/hashtags`, {
           method:  'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -263,14 +255,10 @@ const CreateAIScreen = ({ navigation }) => {
   // ─── UI ───────────────────────────────────────────────────────
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar backgroundColor="#C66CFF" barStyle="dark-content" />
+      <StatusBar backgroundColor="#FDBB67" barStyle="dark-content" />
 
       {/* HEADER */}
-      <LinearGradient
-        colors={['#D88BF8', '#E4B4FF', '#A100C8']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={styles.headerContainer}>
+      <View style={styles.headerContainer}>
         <View style={styles.headerContent}>
           <Image
             source={require('../assets/generate.png')}
@@ -278,7 +266,7 @@ const CreateAIScreen = ({ navigation }) => {
           />
           <Text style={styles.headerTitle}>Create with AI</Text>
         </View>
-      </LinearGradient>
+      </View>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -369,24 +357,22 @@ const CreateAIScreen = ({ navigation }) => {
         </View>
 
         {/* GENERATE BUTTON */}
-        <TouchableOpacity onPress={handleGenerate} activeOpacity={0.9} disabled={loading}>
-          <LinearGradient
-            colors={['#CC6ACB', '#F4A2F5', '#88078C']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={[styles.generateButton, loading && styles.generateButtonDisabled]}>
-            {loading ? (
-              <ActivityIndicator size="small" color="#000" />
-            ) : (
-              <Image
-                source={require('../assets/generate.png')}
-                style={{ height: 24, width: 24, resizeMode: 'contain' }}
-              />
-            )}
-            <Text style={styles.generateText}>
-              {loading ? 'Generating...' : 'Generate'}
-            </Text>
-          </LinearGradient>
+        <TouchableOpacity
+          onPress={handleGenerate}
+          activeOpacity={0.9}
+          disabled={loading}
+          style={[styles.generateButton, loading && styles.generateButtonDisabled]}>
+          {loading ? (
+            <ActivityIndicator size="small" color="#000" />
+          ) : (
+            <Image
+              source={require('../assets/generate.png')}
+              style={{ height: 24, width: 24, resizeMode: 'contain' }}
+            />
+          )}
+          <Text style={styles.generateText}>
+            {loading ? 'Generating...' : 'Generate'}
+          </Text>
         </TouchableOpacity>
 
       </ScrollView>
@@ -398,35 +384,41 @@ export default CreateAIScreen;
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#F5F5F5' },
+
   headerContainer: {
     width: '100%',
     height: height * 0.13,
     borderBottomLeftRadius: 34,
     borderBottomRightRadius: 34,
+    backgroundColor: '#FDBB67',
     justifyContent: 'flex-end',
     alignItems: 'center',
     paddingBottom: 20,
     overflow: 'hidden',
   },
+
   headerContent: { flexDirection: 'row', alignItems: 'center' },
   headerTitle: { fontSize: 18, color: '#000', fontWeight: '700', marginLeft: 8 },
   scrollContent: { paddingHorizontal: 14, paddingTop: 14, paddingBottom: 120 },
   sectionTitle: { fontSize: 16, fontWeight: '700', color: '#111', marginBottom: 14 },
   gridContainer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
+
   card: {
     width: (width - 42) / 2,
-    backgroundColor: '#E9EEF4',
+    backgroundColor: '#FCE9CC',
     borderRadius: 20,
     padding: 14,
     marginBottom: 14,
   },
-  activeCard: { borderWidth: 2, borderColor: '#A100C8' },
+  activeCard: { borderWidth: 2, borderColor: '#FDBB67' },
+
   iconContainer: {
     width: 56, height: 56, borderRadius: 18,
     justifyContent: 'center', alignItems: 'center', marginBottom: 14,
   },
   cardTitle: { fontSize: 18, fontWeight: '700', color: '#111' },
   cardSubtitle: { fontSize: 12, color: '#555', marginTop: 4 },
+
   imagePreviewContainer: { marginTop: 14, borderRadius: 16, overflow: 'hidden', position: 'relative' },
   imagePreview: { width: '100%', height: 180, borderRadius: 16, resizeMode: 'cover' },
   removeImageButton: {
@@ -436,10 +428,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center', alignItems: 'center',
   },
   removeImageText: { color: '#FFF', fontSize: 14, fontWeight: '700' },
+
   hintText: {
-    fontSize: 13, color: '#A100C8', fontWeight: '600',
+    fontSize: 13, color: '#FDBB67', fontWeight: '600',
     marginTop: 10, marginLeft: 4,
   },
+
   promptContainer: {
     backgroundColor: '#FFF', borderRadius: 22,
     minHeight: 180, marginTop: 18, padding: 18, elevation: 3,
@@ -455,12 +449,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF', justifyContent: 'center',
     alignItems: 'center', elevation: 3, marginLeft: 10,
   },
-  actionButtonActive: { backgroundColor: '#F0DCFF', borderWidth: 1.5, borderColor: '#A100C8' },
-  listeningText: { marginTop: 10, fontSize: 13, color: '#A100C8', fontWeight: '600' },
+  actionButtonActive: { backgroundColor: '#FFF3E0', borderWidth: 1.5, borderColor: '#FDBB67' },
+  listeningText: { marginTop: 10, fontSize: 13, color: '#FDBB67', fontWeight: '600' },
+
   generateButton: {
     width: '92%', height: 56, borderRadius: 16,
     alignSelf: 'center', marginTop: 24,
     justifyContent: 'center', alignItems: 'center', flexDirection: 'row',
+    backgroundColor: '#FDBB67',
   },
   generateButtonDisabled: { opacity: 0.7 },
   generateText: { fontSize: 16, fontWeight: '700', color: '#000', marginLeft: 8 },

@@ -14,6 +14,7 @@ import {
   Alert,
 } from 'react-native';
 
+import LinearGradient  from 'react-native-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const {width, height} = Dimensions.get('window');
@@ -219,6 +220,13 @@ const HomeScreen = ({navigation}) => {
   ========================= */
 
   return (
+  <LinearGradient
+        colors={['#FFFFFF', '#F0DDC0']}
+        start={{ x: 0.85, y: 0.1 }}
+        end={{ x: 0.15, y: 0.95 }}
+        locations={[0.23, 0.81]}
+        style={{ flex: 1 }}
+      >
     <SafeAreaView style={styles.safeArea}>
       <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
 
@@ -262,7 +270,7 @@ const HomeScreen = ({navigation}) => {
           {loading ? (
             <ActivityIndicator
               size="large"
-              color="#A100C8"
+              color="#FDBB67"
               style={{marginTop: 60}}
             />
           ) : posts.length === 0 ? (
@@ -276,6 +284,7 @@ const HomeScreen = ({navigation}) => {
 
       </ScrollView>
     </SafeAreaView>
+    </LinearGradient>
   );
 };
 
@@ -338,7 +347,7 @@ const styles = StyleSheet.create({
     height:         72,
     borderRadius:   36,
     borderWidth:    3,
-    borderColor:    '#A100C8',
+    borderColor:    '#FDBB67',
     justifyContent: 'center',
     alignItems:     'center',
     marginBottom:   8,
@@ -355,7 +364,7 @@ const styles = StyleSheet.create({
     width:           22,
     height:          22,
     borderRadius:    11,
-    backgroundColor: '#A100C8',
+    backgroundColor: '#FDBB67',
     justifyContent:  'center',
     alignItems:      'center',
     borderWidth:     2,
@@ -451,7 +460,7 @@ const styles = StyleSheet.create({
   },
   tags: {
     fontSize:     13,
-    color:        '#8A00B8',
+    color:      '#FDBB67',
     fontWeight:   '500',
     marginBottom: 6,
   },

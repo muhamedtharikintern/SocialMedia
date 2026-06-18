@@ -170,7 +170,7 @@ const EditProfileScreen = ({navigation}) => {
   if (fetching) {
     return (
       <SafeAreaView style={styles.safeArea}>
-        <ActivityIndicator size="large" color="#A100C8" style={{marginTop: 80}} />
+        <ActivityIndicator size="large" color="#FDBB67" style={{marginTop: 80}} />
       </SafeAreaView>
     );
   }
@@ -200,7 +200,7 @@ const EditProfileScreen = ({navigation}) => {
 
             <TouchableOpacity activeOpacity={0.8} onPress={saveProfile} disabled={loading}>
               {loading
-                ? <ActivityIndicator size="small" color="#A100C8" />
+                ? <ActivityIndicator size="small" color="#FDBB67" />
                 : <Text style={styles.doneText}>Done</Text>
               }
             </TouchableOpacity>
@@ -377,7 +377,7 @@ const styles = StyleSheet.create({
   doneText: {
     fontSize:   18,
     fontWeight: '600',
-    color:      '#A100C8',
+    color:      '#FDBB67',
   },
   profileSection: {
     alignItems:    'center',
@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
   changePhotoText: {
     fontSize:   18,
     fontWeight: '500',
-    color:      '#A100C8',
+    color:      '#FDBB67',
   },
   sectionDivider: {
     width:           width - 48,
@@ -440,7 +440,7 @@ const styles = StyleSheet.create({
   professionalButtonText: {
     fontSize:   18,
     fontWeight: '600',
-    color:      '#A100C8',
+    color:      '#FDBB67',
   },
   privateTitle: {
     fontSize:          20,

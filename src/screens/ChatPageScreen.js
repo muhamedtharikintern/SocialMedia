@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     height: 72,
     borderRadius: 36,
     borderWidth: 3,
-    borderColor: '#A100C8',
+    borderColor: '#FDBB67',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
@@ -308,11 +308,11 @@ const styles = StyleSheet.create({
   },
 
   senderBubble: {
-    backgroundColor: '#A100C8',
+    backgroundColor: '#FDBB67',
   },
 
   receiverBubble: {
-    backgroundColor: '#EBD4EF',
+    backgroundColor: '#FEF7ED',
   },
 
   messageText: {
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 68,
     borderRadius: 999,
-    backgroundColor: '#A100C8',
+    backgroundColor: '#FDBB67',
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,

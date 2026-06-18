@@ -257,12 +257,12 @@ icon: {
     height: 58,
     borderRadius: 29,
 
-    backgroundColor: '#A100C8',
+    backgroundColor: '#FDBB67',
 
     justifyContent: 'center',
     alignItems: 'center',
 
-    shadowColor: '#A100C8',
+    shadowColor: '#FDBB67',
     shadowOpacity: 0.25,
     shadowRadius: 10,
     shadowOffset: {

@@ -11,7 +11,6 @@ import {
   Dimensions,
   Platform,
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 
 const {width, height} = Dimensions.get('window');
 
@@ -25,19 +24,14 @@ export default function ReelScreen({navigation}) {
         <Text style={styles.emptyTitle}>
           Share a moment with the world
         </Text>
-        <LinearGradient
-          colors={['#D783FF', '#C65BFF', '#A100C8']}
-          start={{x: 0, y: 0}}
-          end={{x: 1, y: 0}}
+
+        <TouchableOpacity
+          activeOpacity={0.85}
           style={styles.createButton}>
-          <TouchableOpacity
-            activeOpacity={0.85}
-            style={styles.createButtonInner}>
-            <Text style={styles.createButtonText}>
-              Create your first reel
-            </Text>
-          </TouchableOpacity>
-        </LinearGradient>
+          <Text style={styles.createButtonText}>
+            Create your first reel
+          </Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -48,11 +42,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+
   emptySection: {
     alignItems: 'center',
     marginTop: 44,
     paddingHorizontal: 24,
   },
+
   emptyTitle: {
     fontSize: 28,
     color: '#111111',
@@ -61,19 +57,16 @@ const styles = StyleSheet.create({
     lineHeight: 38,
     marginBottom: 44,
   },
+
   createButton: {
     width: width * 0.72,
     height: 68,
     borderRadius: 24,
+    backgroundColor: '#FDBB67',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  createButtonInner: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+
   createButtonText: {
     fontSize: 18,
     color: '#111111',

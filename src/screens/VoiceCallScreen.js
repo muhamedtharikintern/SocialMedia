@@ -227,12 +227,12 @@ const styles = StyleSheet.create({
     borderRadius: 77,
 
     borderWidth: 4,
-    borderColor: '#A100C8',
+    borderColor: '#FDBB67',
 
     justifyContent: 'center',
     alignItems: 'center',
 
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FDBB67',
   },
 
   profileImage: {
@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
 
     borderRadius: 999,
 
-    backgroundColor: '#A100C8',
+    backgroundColor: '#FDBB67',
 
     flexDirection: 'row',
     alignItems: 'center',

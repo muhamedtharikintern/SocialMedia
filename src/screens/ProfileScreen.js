@@ -299,7 +299,7 @@ export default function ProfileScreen({navigation}) {
           {activeTab === 'posts' && (
             <>
               {loadingPosts ? (
-                <ActivityIndicator size="large" color="#A100C8" style={{marginTop: 40}} />
+                <ActivityIndicator size="large" color="#FDBB67" style={{marginTop: 40}} />
               ) : posts.length === 0 ? (
                 <View style={styles.emptyContainer}>
                   <Text style={styles.emptyText}>No posts yet</Text>
@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
     height:         108,
     borderRadius:   54,
     borderWidth:    4,
-    borderColor:    '#A100C8',
+    borderColor:    '#FDBB67',
     justifyContent: 'center',
     alignItems:     'center',
   },
@@ -398,7 +398,7 @@ const styles = StyleSheet.create({
     width:           32,
     height:          32,
     borderRadius:    16,
-    backgroundColor: '#A100C8',
+    backgroundColor: '#FDBB67',
     justifyContent:  'center',
     alignItems:      'center',
     borderWidth:     3,
@@ -449,7 +449,7 @@ const styles = StyleSheet.create({
   actionButton: {
     width:           '48%',
     height:          48,
-    backgroundColor: '#EFDDF2',
+    backgroundColor: '#FDBB67',
     borderRadius:    14,
     justifyContent:  'center',
     alignItems:      'center',
@@ -472,7 +472,7 @@ const styles = StyleSheet.create({
     height:          100,
     borderRadius:    50,
     borderWidth:     4,
-    borderColor:     '#A100C8',
+    borderColor:     '#FDBB67',
     justifyContent:  'center',
     alignItems:      'center',
     backgroundColor: '#FFFFFF',
@@ -508,7 +508,7 @@ const styles = StyleSheet.create({
   },
   activeTabIcon: {
     opacity:   1,
-    tintColor: '#A100C8',
+    tintColor: '#FDBB67',
   },
   tabContent: {
     marginTop: 10,

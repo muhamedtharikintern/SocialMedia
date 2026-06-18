@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
 
     borderWidth: 4,
-    borderColor: '#A100C8',
+    borderColor: '#FDBB67',
 
     alignItems: 'center',
     justifyContent: 'center',
@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
 
     borderRadius: 999,
 
-    backgroundColor: '#9D019D',
+    backgroundColor: '#FDBB67',
 
     flexDirection: 'row',
     alignItems: 'center',

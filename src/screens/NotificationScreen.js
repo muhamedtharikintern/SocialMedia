@@ -11,6 +11,7 @@ import {
   Dimensions,
   Platform,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 
 const {width} = Dimensions.get('window');
 
@@ -28,7 +29,7 @@ import profile1 from '../assets/profile1.png';
 import profile2 from '../assets/profile2.png';
 import profile3 from '../assets/profile3.png';
 import profile4 from '../assets/profile4.png';
- import profile5 from '../assets/profile5.png';
+import profile5 from '../assets/profile5.png';
 // import profile6 from '../assets/profile6.png';
 
 import postImage from '../assets/post1.png';
@@ -97,15 +98,15 @@ const NotificationsScreen = ({navigation}) => {
         section: 'Last 30 days',
       },
 
-    //   {
-    //     id: 8,
-    //     type: 'suggestion',
-    //     title: 'New Follow Suggestion:',
-    //     user: 'Marks',
-    //     text: 'You have 2 mutuals.',
-    //     time: '2w',
-    //     profile: profile6,
-    //   },
+      //   {
+      //     id: 8,
+      //     type: 'suggestion',
+      //     title: 'New Follow Suggestion:',
+      //     user: 'Marks',
+      //     text: 'You have 2 mutuals.',
+      //     time: '2w',
+      //     profile: profile6,
+      //   },
 
       {
         id: 9,
@@ -131,9 +132,7 @@ const NotificationsScreen = ({navigation}) => {
 
   const toggleFollow = id => {
     if (followingUsers.includes(id)) {
-      setFollowingUsers(
-        followingUsers.filter(item => item !== id),
-      );
+      setFollowingUsers(followingUsers.filter(item => item !== id));
     } else {
       setFollowingUsers([...followingUsers, id]);
     }
@@ -142,61 +141,40 @@ const NotificationsScreen = ({navigation}) => {
   const renderNotification = item => {
     if (item.section) {
       return (
-        <View
-          key={item.id}
-          style={styles.sectionWrapper}>
-
-          <Text style={styles.sectionTitle}>
-            {item.section}
-          </Text>
-
+        <View key={item.id} style={styles.sectionWrapper}>
+          <Text style={styles.sectionTitle}>{item.section}</Text>
         </View>
       );
     }
 
     return (
-      <View
-        key={item.id}
-        style={styles.notificationCard}>
+      <View key={item.id} style={styles.notificationCard}>
 
         {/* LEFT SIDE */}
 
         <View style={styles.leftSection}>
 
-          <Image
-            source={item.profile}
-            style={styles.profileImage}
-          />
+          <Image source={item.profile} style={styles.profileImage} />
 
           <View style={styles.contentContainer}>
 
             {item.type === 'suggestion' ? (
               <>
-                <Text style={styles.suggestionTitle}>
-                  {item.title}
-                </Text>
+                <Text style={styles.suggestionTitle}>{item.title}</Text>
 
                 <Text style={styles.notificationText}>
-                  <Text style={styles.boldText}>
-                    {item.user}{' '}
-                  </Text>
-
+                  <Text style={styles.boldText}>{item.user}{' '}</Text>
                   {item.text}
                 </Text>
               </>
             ) : (
               <Text style={styles.notificationText}>
-                <Text style={styles.boldText}>
-                  {item.user}{' '}
-                </Text>
-
+                <Text style={styles.boldText}>{item.user}{' '}</Text>
                 {item.text}
               </Text>
             )}
 
-            <Text style={styles.timeText}>
-              {item.time}
-            </Text>
+            <Text style={styles.timeText}>{item.time}</Text>
 
           </View>
 
@@ -209,30 +187,21 @@ const NotificationsScreen = ({navigation}) => {
             activeOpacity={0.8}
             style={[
               styles.followButton,
-              followingUsers.includes(item.id) &&
-                styles.followingButton,
+              followingUsers.includes(item.id) && styles.followingButton,
             ]}
             onPress={() => toggleFollow(item.id)}>
 
             <Text
               style={[
                 styles.followButtonText,
-                followingUsers.includes(item.id) &&
-                  styles.followingText,
+                followingUsers.includes(item.id) && styles.followingText,
               ]}>
-
-              {followingUsers.includes(item.id)
-                ? 'Following'
-                : 'Follow'}
-
+              {followingUsers.includes(item.id) ? 'Following' : 'Follow'}
             </Text>
 
           </TouchableOpacity>
         ) : item.post ? (
-          <Image
-            source={item.post}
-            style={styles.postPreview}
-          />
+          <Image source={item.post} style={styles.postPreview} />
         ) : null}
 
       </View>
@@ -242,9 +211,14 @@ const NotificationsScreen = ({navigation}) => {
   return (
     <SafeAreaView style={styles.safeArea}>
 
-      <StatusBar
-        backgroundColor="#FFFFFF"
-        barStyle="dark-content"
+      <StatusBar backgroundColor="transparent" translucent barStyle="dark-content" />
+
+      {/* LINEAR GRADIENT BACKGROUND — covers the entire screen */}
+      <LinearGradient
+        colors={['#FFFFFF', '#F0DDC0']}
+        start={{x: 0, y: 0}}
+        end={{x: 0, y: 1}}
+        style={styles.gradientBackground}
       />
 
       {/* HEADER */}
@@ -256,16 +230,11 @@ const NotificationsScreen = ({navigation}) => {
           style={styles.backButton}
           onPress={() => navigation.goBack()}>
 
-          <Image
-            source={backIcon}
-            style={styles.backIcon}
-          />
+          <Image source={backIcon} style={styles.backIcon} />
 
         </TouchableOpacity>
 
-        <Text style={styles.headerTitle}>
-          Notifications
-        </Text>
+        <Text style={styles.headerTitle}>Notifications</Text>
 
         <View style={styles.emptySpace} />
 
@@ -310,12 +279,15 @@ import NotificationsScreen from '../screens/NotificationsScreen';
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'transparent',
 
     paddingTop:
-      Platform.OS === 'android'
-        ? StatusBar.currentHeight + 8
-        : 0,
+      Platform.OS === 'android' ? StatusBar.currentHeight + 8 : 0,
+  },
+
+  // Full-screen absolute gradient — sits behind everything
+  gradientBackground: {
+    ...StyleSheet.absoluteFillObject,
   },
 
   header: {

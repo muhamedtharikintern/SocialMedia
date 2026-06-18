@@ -345,7 +345,7 @@ const styles = StyleSheet.create({
 
     borderRadius: 24,
 
-    backgroundColor: '#EEDBF0',
+    backgroundColor: '#F0DDC0',
 
     flexDirection: 'row',
     alignItems: 'center',
@@ -398,7 +398,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
 
     borderWidth: 3,
-    borderColor: '#A100C8',
+    borderColor: '#FDBB67',
 
     alignItems: 'center',
     justifyContent: 'center',
@@ -431,7 +431,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
 
     borderWidth: 2,
-    borderColor: '#A100C8',
+    borderColor: '#FDBB67',
   },
 
   plusIcon: {
@@ -440,7 +440,7 @@ const styles = StyleSheet.create({
 
     resizeMode: 'contain',
 
-    tintColor: '#A100C8',
+    tintColor: '#FDBB67',
   },
 
   storyName: {
@@ -597,7 +597,7 @@ const styles = StyleSheet.create({
 
   resizeMode: 'contain',
 
-  tintColor: '#D98AF8',
+  tintColor: '#000000',
 },
 
   /* =========================
