@@ -319,9 +319,13 @@ export default ChatScreen;
 
 const styles = StyleSheet.create({
   safeArea: {
-    flex: 1,
-    backgroundColor: '#F5F5F5',
-  },
+  flex: 1,
+  backgroundColor: '#F5F5F5',
+  paddingTop:
+    Platform.OS === 'android'
+      ? StatusBar.currentHeight
+      : 0,
+},
 
   container: {
     flex: 1,
@@ -329,177 +333,177 @@ const styles = StyleSheet.create({
   },
 
   scrollContent: {
-    paddingTop: height * 0.03,
-    paddingBottom: 140,
-  },
+  paddingTop: 24,
+  paddingBottom: 120,
+},
 
   /* =========================
       SEARCH
   ========================= */
 
   searchContainer: {
-    width: width * 0.9,
-    alignSelf: 'center',
+  width: width * 0.9,
+  alignSelf: 'center',
 
-    height: 68,
+  height: 56,
+  borderRadius: 18,
 
-    borderRadius: 24,
+  backgroundColor: '#F0DDC0',
 
-    backgroundColor: '#F0DDC0',
+  flexDirection: 'row',
+  alignItems: 'center',
 
-    flexDirection: 'row',
-    alignItems: 'center',
+  paddingHorizontal: 18,
 
-    paddingHorizontal: 24,
+  marginTop: 8,
+  marginBottom: 24,
+},
 
-    marginBottom: 28,
-  },
+searchIcon: {
+  width: 24,
+  height: 24,
 
-  searchIcon: {
-    width: 32,
-    height: 32,
+  resizeMode: 'contain',
 
-    resizeMode: 'contain',
+  tintColor: '#111111',
+},
 
-    tintColor: '#111111',
-  },
+searchInput: {
+  flex: 1,
 
-  searchInput: {
-    flex: 1,
+  marginLeft: 12,
 
-    marginLeft: 16,
+  fontSize: 15,
+  fontWeight: '600',
 
-    fontSize: 18,
-    fontWeight: '600',
-
-    color: '#111111',
-  },
+  color: '#111111',
+},
 
   /* =========================
       STORIES
   ========================= */
 
   storyContainer: {
-    paddingLeft: 24,
-    paddingRight: 12,
+  paddingLeft: 24,
+  paddingRight: 12,
 
-    marginBottom: 36,
-  },
+  marginBottom: 28,
+},
 
-  storyWrapper: {
-    alignItems: 'center',
-    marginRight: 24,
-  },
+storyWrapper: {
+  alignItems: 'center',
+  marginRight: 16,
+},
 
-  storyRing: {
-    width: 96,
-    height: 96,
+storyRing: {
+  width: 82,
+  height: 82,
 
-    borderRadius: 999,
+  borderRadius: 999,
 
-    borderWidth: 3,
-    borderColor: '#FDBB67',
+  borderWidth: 3,
+  borderColor: '#FDBB67',
 
-    alignItems: 'center',
-    justifyContent: 'center',
+  alignItems: 'center',
+  justifyContent: 'center',
 
-    marginBottom: 12,
+  marginBottom: 8,
 
-    position: 'relative',
-  },
+  position: 'relative',
+},
 
-  storyImage: {
-    width: 82,
-    height: 82,
+storyImage: {
+  width: 72,
+  height: 72,
 
-    borderRadius: 999,
-  },
+  borderRadius: 999,
+},
 
-  plusBadge: {
-    width: 30,
-    height: 30,
+plusBadge: {
+  width: 24,
+  height: 24,
 
-    borderRadius: 999,
+  borderRadius: 999,
 
-    backgroundColor: '#FFFFFF',
+  backgroundColor: '#FFFFFF',
 
-    position: 'absolute',
-    bottom: -4,
-    right: -4,
+  position: 'absolute',
+  bottom: -2,
+  right: -2,
 
-    alignItems: 'center',
-    justifyContent: 'center',
+  alignItems: 'center',
+  justifyContent: 'center',
 
-    borderWidth: 2,
-    borderColor: '#FDBB67',
-  },
+  borderWidth: 2,
+  borderColor: '#FDBB67',
+},
 
-  plusIcon: {
-    width: 14,
-    height: 14,
+plusIcon: {
+  width: 12,
+  height: 12,
 
-    resizeMode: 'contain',
+  resizeMode: 'contain',
 
-    tintColor: '#FDBB67',
-  },
+  tintColor: '#FDBB67',
+},
 
-  storyName: {
-    fontSize: 14,
-    fontWeight: '500',
+storyName: {
+  fontSize: 11,
+  fontWeight: '500',
 
-    color: '#111111',
-  },
+  color: '#111111',
+},
 
   /* =========================
       HEADER
   ========================= */
 
   messageHeader: {
-    width: width * 0.9,
-    alignSelf: 'center',
+  width: width * 0.9,
+  alignSelf: 'center',
 
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
 
-    marginBottom: 20,
+  marginBottom: 18,
+},
+
+messageTitle: {
+  fontSize: 18,
+  fontWeight: '700',
+
+  color: '#111111',
+},
+
+editButton: {
+  width: 52,
+  height: 52,
+
+  borderRadius: 999,
+
+  backgroundColor: '#FFFFFF',
+
+  alignItems: 'center',
+  justifyContent: 'center',
+
+  shadowColor: '#000',
+  shadowOpacity: 0.08,
+  shadowRadius: 12,
+  shadowOffset: {
+    width: 0,
+    height: 4,
   },
 
-  messageTitle: {
-    fontSize: 22,
-    fontWeight: '700',
+  elevation: 5,
+},
 
-    color: '#111111',
-  },
+editIcon: {
+  width: 20,
+  height: 20,
 
-  editButton: {
-    width: 64,
-    height: 64,
-
-    borderRadius: 999,
-
-    backgroundColor: '#FFFFFF',
-
-    alignItems: 'center',
-    justifyContent: 'center',
-
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-
-    elevation: 5,
-  },
-
-  editIcon: {
-    width: 26,
-    height: 26,
-
-    resizeMode: 'contain',
-  },
+  resizeMode: 'contain',
+},
 
   /* =========================
       CHATS
@@ -511,66 +515,66 @@ const styles = StyleSheet.create({
   },
 
   chatRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  flexDirection: 'row',
+  alignItems: 'center',
 
-    marginBottom: 32,
-  },
+  marginBottom: 22,
+},
 
-  profileImage: {
-    width: 70,
-    height: 70,
-
-    borderRadius: 999,
-  },
-
-  chatContent: {
-    flex: 1,
-    marginLeft: 20,
-    paddingRight: 16,
-  },
-
-  nameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-
-    marginBottom: 8,
-  },
-
-  chatName: {
-    fontSize: 15,
-    fontWeight: '700',
-
-    color: '#111111',
-  },
-
-  verifiedIcon: {
-    width: 17,
-    height: 17,
-
-    resizeMode: 'contain',
-
-    marginLeft: 8,
-  },
-
-  chatMessage: {
-    fontSize: 10,
-    lineHeight: 23,
-    fontWeight: '500',
-
-    color: '#111111',
-  },
-
-  chatTime: {
-    color: '#444444',
-    fontWeight: '500',
-  },
-
-  ccameraButton: {
-  width: 52,
-  height: 52,
+profileImage: {
+  width: 60,
+  height: 60,
 
   borderRadius: 999,
+},
+
+chatContent: {
+  flex: 1,
+  marginLeft: 14,
+  paddingRight: 10,
+},
+
+nameRow: {
+  flexDirection: 'row',
+  alignItems: 'center',
+
+  marginBottom: 4,
+},
+
+chatName: {
+  fontSize: 13,
+  fontWeight: '700',
+
+  color: '#111111',
+},
+
+verifiedIcon: {
+  width: 14,
+  height: 14,
+
+  resizeMode: 'contain',
+
+  marginLeft: 6,
+},
+
+chatMessage: {
+  fontSize: 11,
+  lineHeight: 18,
+  fontWeight: '500',
+
+  color: '#111111',
+},
+
+chatTime: {
+  color: '#444444',
+  fontWeight: '500',
+},
+
+  cameraButton: {
+  width: 42,
+  height: 42,
+
+  borderRadius: 21,
 
   backgroundColor: 'rgba(255,255,255,0.92)',
 
@@ -578,26 +582,26 @@ const styles = StyleSheet.create({
   justifyContent: 'center',
 
   borderWidth: 1,
-  borderColor: '#F1E5F5',
+  borderColor: '#F3EAF7',
 
   shadowColor: '#000',
-  shadowOpacity: 0.05,
-  shadowRadius: 8,
+  shadowOpacity: 0.04,
+  shadowRadius: 6,
   shadowOffset: {
     width: 0,
     height: 2,
   },
 
-  elevation: 3,
+  elevation: 2,
 },
 
   cameraIcon: {
-  width: 28,
-  height: 28,
+  width: 20,
+  height: 20,
 
   resizeMode: 'contain',
 
-  tintColor: '#000000',
+  tintColor: '#E3A7F5',
 },
 
   /* =========================

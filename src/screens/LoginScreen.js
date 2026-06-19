@@ -120,7 +120,16 @@ const LoginScreen = ({navigation}) => {
                 {loading ? 'Logging in...' : 'Login'}
               </Text>
             </TouchableOpacity>
-          </View>
+            <View style={styles.dividerContainer}>
+  <View style={styles.dividerLine} />
+
+  <Text style={styles.dividerText}>
+    or Log in with
+  </Text>
+  <View style={styles.dividerLine} />
+</View>
+
+          </View >
 
           {/* Social */}
           <View style={styles.socialContainer}>
@@ -160,12 +169,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContainer: {
-    flexGrow: 1,
-    alignItems: 'center',
-    paddingTop: verticalScale(40),
-    paddingBottom: verticalScale(32),
-    backgroundColor: '#F0DDC0',
-  },
+  flexGrow: 1,
+  alignItems: 'center',
+
+  paddingTop:
+    Platform.OS === 'ios'
+      ? verticalScale(70)
+      : verticalScale(50),
+
+  paddingBottom: verticalScale(32),
+
+  backgroundColor: '#FFF8EC',
+},
 
   // Logo
   logoContainer: {
@@ -173,15 +188,42 @@ const styles = StyleSheet.create({
     marginBottom: verticalScale(28),
   },
   logo: {
-    width: scale(110),
-    height: scale(110),
-  },
+  width: scale(95),
+  height: scale(95),
+},
   welcomeText: {
     fontSize: moderateScale(32),
     color: '#FDBB67',
     fontWeight: '500',
     marginTop: verticalScale(16),
   },
+
+  dividerContainer: {
+  width: width * 0.78,
+
+  flexDirection: 'row',
+  alignItems: 'center',
+
+  marginTop: verticalScale(28),
+},
+
+dividerLine: {
+  flex: 1,
+
+  height: 1,
+
+  backgroundColor: '#FDBB67',
+},
+
+dividerText: {
+  marginHorizontal: scale(12),
+
+  fontSize: moderateScale(14),
+
+  color: '#FDBB67',
+
+  fontWeight: '500',
+},
 
   // Form
   formContainer: {
@@ -230,10 +272,11 @@ const styles = StyleSheet.create({
 
   // Social
   socialContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: verticalScale(44),
-  },
+  flexDirection: 'row',
+  alignItems: 'center',
+
+  marginTop: verticalScale(24),
+},
   socialButton: {
     width: scale(56),
     height: scale(56),
@@ -255,10 +298,11 @@ const styles = StyleSheet.create({
 
   // Bottom
   bottomContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: verticalScale(32),
-  },
+  flexDirection: 'row',
+  alignItems: 'center',
+
+  marginTop: verticalScale(50),
+},
   bottomText: {
     fontSize: moderateScale(15),
     color: '#FDBB67',
